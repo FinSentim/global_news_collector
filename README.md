@@ -24,3 +24,17 @@ run 'pip install -r requirements.txt'
 ## Supported websites
 
 To be updated
+
+## For each supported websites functions
+
+
+function **get_article(url)** that accepts a link to an article and returns a dictionary with the following keys:
+    date_published: date of publication
+    date_retrieved: date of retrieval
+    url: url of the article
+    title: title of the article
+    publisher: Company or website that published the article
+    publisher_url: url of the publisher
+    author: author of the article
+    body: text of the article
+    
