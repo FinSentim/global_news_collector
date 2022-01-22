@@ -15,7 +15,7 @@ run 'pip install -r requirements.txt'
 - Run the tests (`python -m unittest`)
 - Select the Github issue you want to work on
 - Create a branch from main branch, name appropriately (e.g. `123-fix-something` where 123 is the issue number and `fix-something` is the issue title)
-- Implement/fix the feature
+- Implement/fix the feature, implement tests
 - Ensure that the code works, run the tests (`python -m unittest`)
 - Rebase on master (fix any conflicts)
 - Open a pull request
@@ -28,7 +28,7 @@ To be updated
 ## For each supported websites functions
 
 
-function **get_article(url)** that accepts a link to an article and returns a dictionary with the following keys:
+**get_article(url)** that accepts a link to an article and returns a dictionary with the following keys:
     date_published: date of publication
     date_retrieved: date of retrieval
     url: url of the article
@@ -38,5 +38,5 @@ function **get_article(url)** that accepts a link to an article and returns a di
     author: author of the article
     body: text of the article
     
-function **get_articles(url)** that accepts a link a page with multiple articles (for example business news page) and returns a list of dictionaries, where each dictionary is a result of calling **get_article(url)** on each article link.
+**get_articles_list(url)** that accepts a link a page with multiple articles (for example business news page) and returns a list of dictionaries, where each dictionary is a result of calling **get_article(url)** on each article link.
 
