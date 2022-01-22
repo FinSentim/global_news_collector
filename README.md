@@ -38,3 +38,5 @@ function **get_article(url)** that accepts a link to an article and returns a di
     author: author of the article
     body: text of the article
     
+function **get_articles(url)** that accepts a link a page with multiple articles (for example business news page) and returns a list of dictionaries, where each dictionary is a result of calling **get_article(url)** on each article link.
+
