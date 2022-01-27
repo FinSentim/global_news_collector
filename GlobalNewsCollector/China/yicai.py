@@ -17,7 +17,7 @@ class yicai(BaseCollector.BaseCollector):
         r = requests.get(url)
         soup = BeautifulSoup(r.content, 'html5lib')
 
-        articles = soup.find('div', attrs={'id':'headlist'})
+        articles = soup.find('div', attrs={'id':'headlist'}) # headlist contains the latest 25 articles
         article_list = []
 
         for article in articles.find_all('a', attrs={'class':'f-db'}, href=True):
@@ -30,12 +30,12 @@ class yicai(BaseCollector.BaseCollector):
         r = requests.get(url)
         soup = BeautifulSoup(r.content, 'html5lib')
 
-        date_retrieved = date.today().strftime("%d %b %Y")
+        date_retrieved = date.today().strftime("%d %b %Y") # current date, can be reformatted
 
-        article_info = soup.find('div', attrs={'class':'title f-pr'})
+        article_info = soup.find('div', attrs={'class':'title f-pr'}) # article header, used to extract multiple dictionary entries
         title = article_info.h1.text
-        author = article_info.find('p', attrs={'class':'names'}).text[3:]
-        date = article_info.em.text
+        author = article_info.find('p', attrs={'class':'names'}).text[3:] # author formatted as '责编：' ('Responsible editor:') followed by the name
+        date = article_info.em.text # time in UTC+8, probably
 
         # text body currently doesn't filter away links and the like but can easily be modified for desired output format:
         text = soup.find('div', attrs={'id':'multi-text'}).text
@@ -52,8 +52,3 @@ class yicai(BaseCollector.BaseCollector):
         }
 
         return dictionary
-
-        
-
-
-
