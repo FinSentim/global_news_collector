@@ -1,16 +1,13 @@
-# import sys
-# sys.path.append("../GlobalNewsCollector")
-# from GlobalNewsCollector.BaseCollector import BaseCollector
+import os
+import sys
+sys.path.insert(1, os.path.join(sys.path[0], '..'))
 from abc import ABC, ABCMeta, abstractmethod
-# import `..\BaseCollector`
-# from GlobalNewsCollector.BaseCollector import BaseCollector
-#from abc import ABCMeta
-#import GlobalNewsCollector.BaseCollector as A
+import BaseCollector
 import requests
 from bs4 import BeautifulSoup
-
+from datetime import date
 # url to non-locked article https://www.caixinglobal.com/2022-01-26/cx-daily-major-evergrande-creditor-faces-wave-of-bad-loans-101834884.html
-class caixin(metaclass = ABCMeta):
+class caixin(BaseCollector.BaseCollector):
 
     # accepts a link to an article and returns a dictionary with the following keys: date_published: date 
     # of publication date_retrieved: date of retrieval url: url of the article title: title of the article 
@@ -20,23 +17,22 @@ class caixin(metaclass = ABCMeta):
 
         r = requests.get(url)
         soup = BeautifulSoup(r.content, 'html5lib')
-        body_table = soup.find_all('div', attrs={'id':'appContent'})
-        for paragraph in body_table:
-            for test in paragraph.find_all("p"):
-                if (test.style==None):
-                    print(test.text)
-        #print(body_table.text)
-        articleInfo = {"hej": "hejdå"}
-        #     "date_published": "Ford",
-        #     "date_retrieved": "Mustang",
-        #     "url": url
-        #     "title": 
-        #     "publisher":
-        #     "publisher_url":
-        #     "author":
-        #     "body":
-        # }
-      
+        articleInfo = {}
+        articleInfo['date_publised'] = soup.find('div', attrs={'class': 'cons-date'})
+        articleInfo['date_retrieved'] = date.today()
+        articleInfo['url'] = url
+        # body_table = soup.find_all('div', attrs={'class':'main-l-inner'})
+        author = soup.find('div', attrs={'class':'cons-author-txt'})
+        if author == None:
+            author = soup.find('div', attrs={'class':'cons-author-txt02'})
+        print(author.text)
+        articleInfo['author'] = author.text
+        articleInfo['title'] = soup.find('div', attrs={'class':'cons-title'})
+        articleInfo['publisher'] = "Caixin Media"
+        articleInfo['publisher_url'] = "https://www.caixinglobal.com"
+
+        # Article body is behind paywall
+        print
         return articleInfo
   
     # that accepts a link a page with multiple articles (for example business news page) and returns a 
@@ -47,3 +43,5 @@ class caixin(metaclass = ABCMeta):
 
 c = caixin()
 c.get_article("https://www.caixinglobal.com/2022-01-26/opinion-chinas-factories-are-still-indispensable-to-the-us-101835089.html")
+
+c.get_article("https://www.caixinglobal.com/2021-11-16/xi-tells-biden-that-china-and-us-should-respect-each-other-and-cooperate-101805594.html")
