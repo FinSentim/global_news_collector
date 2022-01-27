@@ -1,10 +1,16 @@
 from bs4 import BeautifulSoup
 import requests
 from abc import ABC, abstractmethod
-from GlobalNewsCollector.BaseCollector import BaseCollector
+# from GlobalNewsCollector.BaseCollector import BaseCollector
 from datetime import date
 
-class yicai(BaseCollector):
+import os
+import sys
+sys.path.insert(1, os.path.join(sys.path[0], '..'))
+
+import BaseCollector
+
+class yicai(BaseCollector.BaseCollector):
 
     def get_articles_list(self, url: str) -> list:
 
