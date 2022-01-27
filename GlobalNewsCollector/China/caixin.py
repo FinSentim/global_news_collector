@@ -18,21 +18,15 @@ class caixin(BaseCollector.BaseCollector):
         r = requests.get(url)
         soup = BeautifulSoup(r.content, 'html5lib')
         articleInfo = {}
-        articleInfo['date_publised'] = soup.find('div', attrs={'class': 'cons-date'})
-        articleInfo['date_retrieved'] = date.today()
+        articleInfo['date_publised'] = soup.find('span', attrs={'class': 'bd_block', 'id':'pubtime_baidu'}).text
+        articleInfo['date_retrieved'] = date.today().strftime("%d-%m-%Y")
         articleInfo['url'] = url
-        # body_table = soup.find_all('div', attrs={'class':'main-l-inner'})
-        author = soup.find('div', attrs={'class':'cons-author-txt'})
-        if author == None:
-            author = soup.find('div', attrs={'class':'cons-author-txt02'})
-        print(author.text)
-        articleInfo['author'] = author.text
-        articleInfo['title'] = soup.find('div', attrs={'class':'cons-title'})
+        articleInfo['author'] = soup.find('span', attrs={'class':'bd_block', 'id':'author_baidu'}).text        
+        articleInfo['title'] = soup.find('title').text
         articleInfo['publisher'] = "Caixin Media"
-        articleInfo['publisher_url'] = "https://www.caixinglobal.com"
-
-        # Article body is behind paywall
-        print
+        articleInfo['publisher_url'] = "https://www.caixin.com"
+        
+        print(articleInfo)
         return articleInfo
   
     # that accepts a link a page with multiple articles (for example business news page) and returns a 
@@ -42,6 +36,5 @@ class caixin(BaseCollector.BaseCollector):
         pass
 
 c = caixin()
-c.get_article("https://www.caixinglobal.com/2022-01-26/opinion-chinas-factories-are-still-indispensable-to-the-us-101835089.html")
+# c.get_article("https://www.caixinglobal.com/2022-01-26/opinion-chinas-factories-are-still-indispensable-to-the-us-101835089.html")
 
-c.get_article("https://www.caixinglobal.com/2021-11-16/xi-tells-biden-that-china-and-us-should-respect-each-other-and-cooperate-101805594.html")
