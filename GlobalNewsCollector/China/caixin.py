@@ -21,20 +21,31 @@ class caixin(BaseCollector.BaseCollector):
         articleInfo['date_publised'] = soup.find('span', attrs={'class': 'bd_block', 'id':'pubtime_baidu'}).text
         articleInfo['date_retrieved'] = date.today().strftime("%d-%m-%Y")
         articleInfo['url'] = url
-        articleInfo['author'] = soup.find('span', attrs={'class':'bd_block', 'id':'author_baidu'}).text        
-        articleInfo['title'] = soup.find('title').text
+        # Handle missing author articles
+        try:
+            articleInfo['author'] = soup.find('span', attrs={'class':'bd_block', 'id':'author_baidu'}).text    
+        except AttributeError:
+            articleInfo['author'] = 'N/A'    
+        articleInfo['title'] = soup.find('div', attrs={'id':'conTit'}).find('h1').text.strip()
         articleInfo['publisher'] = "Caixin Media"
         articleInfo['publisher_url'] = "https://www.caixin.com"
-        
-        print(articleInfo)
+
         return articleInfo
   
     # that accepts a link a page with multiple articles (for example business news page) and returns a 
     # list of dictionaries, where each dictionary is a result of calling get_article(url) on each article 
     # link.
-    def get_articles_list(self, url: str) -> list: 
-        pass
+    def get_articles_list(self, url: str) -> list:
+        r = requests.get(url) # get start page of caixin
+        soup = BeautifulSoup(r.content, 'html5lib')       
+        articleList = []
+        listOFArticles = soup.find('div', attrs={'class':'news_list'})
+        for article in listOFArticles.find_all('dl'):
+            par = article.find('p').find('a', href=True)['href']
+            articleList.append(self.get_article(par))
+        # print(articleList)
+        return articleList
+
 
 c = caixin()
-# c.get_article("https://www.caixinglobal.com/2022-01-26/opinion-chinas-factories-are-still-indispensable-to-the-us-101835089.html")
-
+c.get_article("https://www.caixin.com/2022-01-28/101836280.html")
