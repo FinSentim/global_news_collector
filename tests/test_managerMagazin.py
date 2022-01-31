@@ -7,7 +7,7 @@ class TestScrapper(unittest.TestCase):
     def test_get_articles_list(self):
         url = "https://www.manager-magazin.de/"
         list = managerMagazin.get_articles_list(managerMagazin,url)
-        self.assertEqual(len(list),29)
+        self.assertEqual(len(list),44)
         
 
     def test_get_article(self):

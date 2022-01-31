@@ -36,9 +36,7 @@ class managerMagazin(metaclass=ABCMeta):
                 article = article.replace("\"", "'")
                 article = article.strip()
 
-                #If the article is behind paywall we won't recieve a body, this check is here to stop the program from doing the rest of the calculations in order to optimize the program
-                if(article == ""):
-                        return {"body" : ""}
+                
 
                 # finding the author of an article
                 author = soup.find('meta',attrs={"name":"author"}) 
@@ -46,9 +44,13 @@ class managerMagazin(metaclass=ABCMeta):
 
                 # finding date published, alternatively use "last-modified" instead of "date"
                 
-                datePublished = soup.find("meta",attrs={"name":"date"})
-                datePublished = datePublished["content"]
-                datePublished = datePublished[0:10]
+                try:
+                        datePublished = soup.find("meta",attrs={"name":"date"})
+                        datePublished = datePublished["content"]
+                        datePublished = datePublished[0:10]
+                except:
+                        print("This URL is not an article: " + url)
+                
                
                 
 
@@ -83,11 +85,8 @@ class managerMagazin(metaclass=ABCMeta):
                 articles = soup.find('div',attrs={'class':'relative lg:pt-8 md:pt-8 sm:pt-4 lg:px-8 lg:bg-shade-lightest lg:dark:bg-black'})
                 for row in articles.findAll('article',):
                         if("manager-magazin" in row.a["href"]):
-                                dict = self.get_article(self,row.a["href"])  
-                                if(dict["body"] == ""):
-                                        pass
-                                else:     
-                                        article_list.append(dict)
+                                dict = self.get_article(self,row.a["href"])   
+                                article_list.append(dict)
 
                 return article_list
 
@@ -104,6 +103,3 @@ class managerMagazin(metaclass=ABCMeta):
 # URL = "https://www.manager-magazin.de/karriere/coming-out-als-ceo-der-weg-eines-topmanagers-vom-mann-zur-frau-a-ecb6e418-5cd4-4fd1-82a8-7328ca6745cb"
 # list = obj.get_article(URL)      
 # print(list)
-
-
-
