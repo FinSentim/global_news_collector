@@ -30,27 +30,41 @@ class managerMagazin(metaclass=ABCMeta):
                 table = soup.find('div', attrs={'class':'RichText RichText--iconLinks RichText--lastPmb0 RichText--lastInline lg:w-8/12 md:w-10/12 lg:mx-auto md:mx-auto lg:px-24 md:px-24 sm:px-16 break-words word-wrap'})
                 if(table != None):
                         article = article + table.text
-                
+
+                #Remove unnecessary characters and whitespaces from string
+                article = article.replace("\n","")
+                article = article.replace("\"", "'")
+                article = article.strip()
+
+                #If the article is behind paywall we won't recieve a body, this check is here to stop the program from doing the rest of the calculations in order to optimize the program
+                if(article == ""):
+                        return {"body" : ""}
+
                 # finding the author of an article
                 author = soup.find('meta',attrs={"name":"author"}) 
                 author = author["content"]
 
-                # finding date published. Some links might not actually be articles but are still marked as articles in the html source code. If the page has a date published value it is an article and will then be added, 
-                # otherwise it won't be added
-                try:
-                        datePublished = soup.find("meta",attrs={"name":"date"})
-                        datePublished = datePublished["content"]
-                except:
-                        print("This URL is not an article: " + url)
+                # finding date published, alternatively use "last-modified" instead of "date"
+                
+                datePublished = soup.find("meta",attrs={"name":"date"})
+                datePublished = datePublished["content"]
+                datePublished = datePublished[0:10]
+               
+                
+
+                # finding the title of the article
                 title = soup.find("meta",property={"og:title"})
                 title = title["content"]
+
+                # getting todays date
                 date_retrieved = date.today().strftime("%Y-%m-%d")
                 
+                #adding everything to a dictionary
                 articleDict["date_published"] = datePublished
                 articleDict["date_retrieved"] = date_retrieved
                 articleDict["url"] = url
                 articleDict["title"] = title
-                articleDict["publisher"] = "Manager Magazin"
+                articleDict["publisher"] = "manager magazin"
                 articleDict["publisher_url"] = "https://www.manager-magazin.de/" 
                 articleDict["author"] = author
                 articleDict["body"] = article
@@ -64,10 +78,16 @@ class managerMagazin(metaclass=ABCMeta):
                 article_list = []
                 r = requests.get(url)
                 soup = BeautifulSoup(r.content,'html5lib')
+
+                # finds every article url on the page and calls for get_article with the fetched url and finally appends the retrieved dictionary to a list
                 articles = soup.find('div',attrs={'class':'relative lg:pt-8 md:pt-8 sm:pt-4 lg:px-8 lg:bg-shade-lightest lg:dark:bg-black'})
                 for row in articles.findAll('article',):
-                        if("manager-magazin" in row.a["href"]):       
-                                article_list.append(self.get_article(row.a["href"]))
+                        if("manager-magazin" in row.a["href"]):
+                                dict = self.get_article(self,row.a["href"])  
+                                if(dict["body"] == ""):
+                                        pass
+                                else:     
+                                        article_list.append(dict)
 
                 return article_list
 
@@ -78,20 +98,12 @@ class managerMagazin(metaclass=ABCMeta):
 #         print(i)
 #         print("\n")
 
+# print(len(list))
+
 # obj = managerMagazin()
-# URL = "https://www.manager-magazin.de/"
+# URL = "https://www.manager-magazin.de/karriere/coming-out-als-ceo-der-weg-eines-topmanagers-vom-mann-zur-frau-a-ecb6e418-5cd4-4fd1-82a8-7328ca6745cb"
 # list = obj.get_article(URL)      
-# for i in list:
-#         print(i)
-#         print("\n")
+# print(list)
 
 
-# import os
-# import sys
-# sys.path.insert(1,os.path.join(sys.path[0], '..'))
-# import requests
-# from bs4 import BeautifulSoup
-# from datetime import date
-# import BaseCollector
-# class managerMagazin(BaseCollector.BaseCollector):
 
