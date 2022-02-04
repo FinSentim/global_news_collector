@@ -9,7 +9,7 @@ class TestScrapper(unittest.TestCase):
         list = managerMagazin.get_articles_list(managerMagazin,url)
         for article in list:
             self.assertTrue(len(article) > 0)
-            self.assertIsInstance(article, str)
+            self.assertIsInstance(article, dict)
         
 
     def test_get_article(self):
