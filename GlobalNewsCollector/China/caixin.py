@@ -30,6 +30,7 @@ class caixin(BaseCollector.BaseCollector):
         articleInfo['date_publised'] = soup.find('span', attrs={'class': 'bd_block', 'id':'pubtime_baidu'}).text
         articleInfo['date_retrieved'] = date.today().strftime("%d-%m-%Y")
         articleInfo['url'] = url
+
         # Handle missing author articles
         try:
             articleInfo['author'] = soup.find('span', attrs={'class':'bd_block', 'id':'author_baidu'}).text
@@ -38,7 +39,8 @@ class caixin(BaseCollector.BaseCollector):
         articleInfo['title'] = soup.find('div', attrs={'id':'conTit'}).find('h1').text.strip()
         articleInfo['publisher'] = "Caixin Media"
         articleInfo['publisher_url'] = "https://www.caixin.com"
-        #Extract article info:
+
+        # Extract article info:
         paragraph_table = soup.find('div', attrs={'id':'Main_Content_Val'})
         body = ""
         for paragraph in paragraph_table.find_all('p'):
@@ -47,9 +49,6 @@ class caixin(BaseCollector.BaseCollector):
         articleInfo['body'] = body
         return articleInfo
   
-    # that accepts a link a page with multiple articles (for example business news page) and returns a 
-    # list of dictionaries, where each dictionary is a result of calling get_article(url) on each article 
-    # link.
     def get_articles_list(self, url: str) -> list:
         """
         Scrap all articles visible in the "Latest news view".
@@ -59,7 +58,7 @@ class caixin(BaseCollector.BaseCollector):
         Returns: A list containing a dictionary returned from get_article() for each article.
         """
 
-        r = requests.get(url) # get start page of caixin
+        r = requests.get(url) 
         soup = BeautifulSoup(r.content, 'html5lib')       
         articleList = []
         listOFArticles = soup.find('div', attrs={'class':'news_list'})
@@ -67,8 +66,3 @@ class caixin(BaseCollector.BaseCollector):
             par = article.find('p').find('a', href=True)['href']
             articleList.append(self.get_article(par))
         return articleList
-
-
-c = caixin()
-# c.get_article("https://www.caixin.com/2022-01-28/101836280.html")
-# c.get_articles_list("https://www.caixin.com/")
