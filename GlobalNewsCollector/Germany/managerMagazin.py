@@ -7,8 +7,6 @@ from datetime import date
 
 class managerMagazin(metaclass=ABCMeta):
 
-        # def __init__(self):     
-        #         pass   
 
 
         def get_article(self,url:str) -> dict:
@@ -43,17 +41,13 @@ class managerMagazin(metaclass=ABCMeta):
                 author = author["content"]
 
                 # finding date published, alternatively use "last-modified" instead of "date"
-                
                 try:
                         datePublished = soup.find("meta",attrs={"name":"date"})
                         datePublished = datePublished["content"]
                         datePublished = datePublished[0:10]
                 except:
-                        print("This URL is not an article: " + url)
+                        pass
                 
-               
-                
-
                 # finding the title of the article
                 title = soup.find("meta",property={"og:title"})
                 title = title["content"]
@@ -85,21 +79,11 @@ class managerMagazin(metaclass=ABCMeta):
                 articles = soup.find('div',attrs={'class':'relative lg:pt-8 md:pt-8 sm:pt-4 lg:px-8 lg:bg-shade-lightest lg:dark:bg-black'})
                 for row in articles.findAll('article',):
                         if("manager-magazin" in row.a["href"]):
-                                dict = self.get_article(self,row.a["href"])   
-                                article_list.append(dict)
+                                dict = self.get_article(self,row.a["href"])
+                                if(dict["body"] == ""):
+                                        pass   
+                                else:
+                                        article_list.append(dict)
 
                 return article_list
 
-# obj = managerMagazin()
-# URL = "https://www.manager-magazin.de/"
-# list = obj.get_articles_list(URL)      
-# for i in list:
-#         print(i)
-#         print("\n")
-
-# print(len(list))
-
-# obj = managerMagazin()
-# URL = "https://www.manager-magazin.de/karriere/coming-out-als-ceo-der-weg-eines-topmanagers-vom-mann-zur-frau-a-ecb6e418-5cd4-4fd1-82a8-7328ca6745cb"
-# list = obj.get_article(URL)      
-# print(list)
