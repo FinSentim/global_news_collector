@@ -7,7 +7,7 @@ class TestScrapper(unittest.TestCase):
     def test_get_articles_list(self):
         url = "https://www.manager-magazin.de/"
         list = managerMagazin.get_articles_list(managerMagazin,url)
-        self.assertFalse(list, None)
+        self.assertFalse(list == None)
         for article in list:
             self.assertTrue(len(article) > 0)
             self.assertIsInstance(article, dict)
