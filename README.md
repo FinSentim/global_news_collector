@@ -29,14 +29,14 @@ To be updated
 
 
 **get_article(url)** that accepts a link to an article and returns a dictionary with the following keys:
-    * date_published: date of publication
-    * date_retrieved: date of retrieval
-    * url: url of the article
-    *title: title of the article
-    *publisher: Company or website that published the article
-    *publisher_url: url of the publisher
-    *author: author of the article
-    *body: text of the article
+    - date_published: date of publication
+    - date_retrieved: date of retrieval
+    - url: url of the article
+    - title: title of the article
+    - publisher: Company or website that published the article
+    - publisher_url: url of the publisher
+    - author: author of the article
+    - body: text of the article
     
 **get_articles_list(url)** that accepts a link a page with multiple articles (for example business news page) and returns a list of dictionaries, where each dictionary is a result of calling **get_article(url)** on each article link.
 
