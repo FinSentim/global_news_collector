@@ -8,7 +8,6 @@ class TestCaixin(unittest.TestCase):
     def test_get_article(self):
         ncaixin = caixin()
         url = "https://www.caixin.com/2022-01-28/101836280.html"
-        #current_date is today's date in format  'DD-MM-YYYY' as string
         current_date = date.today().strftime("%d-%m-%Y")
         correct = {
             'date_publised': '2022-01-28 21:16:17' ,
