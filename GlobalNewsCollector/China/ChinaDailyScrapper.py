@@ -1,11 +1,9 @@
-#from lib2to3.pytree import Base
-#from abc import ABC, abstractmethod
-from GlobalNewsCollector import BaseCollector
+from GlobalNewsCollector.BaseCollector import BaseCollector
 from bs4 import BeautifulSoup
 import requests
 import datetime
 
-class ChinaDailyScrapper(BaseCollector.BaseCollector):
+class ChinaDailyScrapper(BaseCollector):
 
     def get_article(self, url: str) -> dict:
         r = requests.get(url)
@@ -44,8 +42,6 @@ class ChinaDailyScrapper(BaseCollector.BaseCollector):
         if len(getArticleInfo) > 1:    
             dateOfPublish = getArticleInfo[1].text.removesuffix('\u3000')
 
-     
-
         #dictionary to return
         article = {
             "body": body,
@@ -71,13 +67,11 @@ class ChinaDailyScrapper(BaseCollector.BaseCollector):
             for row2 in row.findAll('div', attrs = {'class':'mr10'}):
                 links.append('https:' + row2.a['href'])
 
-
         #Get right row of articles on Front page
         getLinksR = soup.findAll('div', attrs= {'class':"yaowen"})
         for row in getLinksR:
             for row2 in row.findAll('li'):
                 links.append('https:' + row2.a['href'])
-
 
         #Call get_article function with links collected in "links" list and append it if it is a valid article (not null)
         for link in links:
@@ -87,7 +81,3 @@ class ChinaDailyScrapper(BaseCollector.BaseCollector):
 
         return articles 
     
-
-#get_article("http://finance.chinadaily.com.cn/a/202201/25/WS61ef9ac6a3107be497a03cdf.html")    
-#get_article("http://finance.chinadaily.com.cn/a/202201/25/WS61ef9ac6a3107be497a03cde.html")
-#get_articles_list("https://cn.chinadaily.com.cn/")

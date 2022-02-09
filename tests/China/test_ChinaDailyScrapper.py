@@ -3,7 +3,6 @@ import unittest
 import datetime
 from GlobalNewsCollector.China.ChinaDailyScrapper import ChinaDailyScrapper 
 
-
 class TestChinaDailyScrapper(unittest.TestCase):
     maxDiff = None
 
@@ -27,13 +26,9 @@ class TestChinaDailyScrapper(unittest.TestCase):
         collector = ChinaDailyScrapper()
         url = "https://cn.chinadaily.com.cn/"
         links = collector.get_articles_list(url)
-        
         for article in links:
             self.assertTrue(article != None)
-
         self.assertEqual(len(links),34)
-
-
 
 if __name__ == '__main__':
     unittest.main()
