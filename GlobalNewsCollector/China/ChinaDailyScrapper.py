@@ -1,8 +1,6 @@
-from lib2to3.pytree import Base
-import os
-import sys
-sys.path.insert(1, os.path.join(sys.path[0], '..'))
-import BaseCollector
+#from lib2to3.pytree import Base
+#from abc import ABC, abstractmethod
+from GlobalNewsCollector import BaseCollector
 from bs4 import BeautifulSoup
 import requests
 import datetime
@@ -10,7 +8,7 @@ import datetime
 
 class ChinaDailyScrapper(BaseCollector.BaseCollector):
 
-    def get_article(url: str):
+    def get_article(self, url: str) -> dict:
         r = requests.get(url)
         soup = BeautifulSoup(r.content, 'html5lib')
         body = []
@@ -24,6 +22,10 @@ class ChinaDailyScrapper(BaseCollector.BaseCollector):
             for text in row.findAll('p'):
                 body.append(text.text)
         
+        #If empty page, skip this link
+        if body == []:
+            return
+
         #Get title
         getTitle = soup.findAll('h1', attrs= {'class':'dabiaoti'})
         if (getTitle == []):
@@ -43,9 +45,7 @@ class ChinaDailyScrapper(BaseCollector.BaseCollector):
         if len(getArticleInfo) > 1:    
             dateOfPublish = getArticleInfo[1].text.removesuffix('\u3000')
 
-        #If empty page, skip this link
-        if body == []:
-            return
+     
 
         #dictionary to return
         article = {
@@ -60,7 +60,7 @@ class ChinaDailyScrapper(BaseCollector.BaseCollector):
             }
         return article
 
-    def get_articles_list(url: str):
+    def get_articles_list(self, url: str) -> list:
         r = requests.get(url)
         soup = BeautifulSoup(r.content, 'html5lib')
         links = []
@@ -82,7 +82,7 @@ class ChinaDailyScrapper(BaseCollector.BaseCollector):
 
         #Call get_article function with links collected in "links" list
         for link in links:
-                articles.append(get_article(link))
+                articles.append(self.get_article(link))
 
         return articles 
     
