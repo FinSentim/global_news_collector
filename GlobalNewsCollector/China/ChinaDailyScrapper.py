@@ -5,7 +5,6 @@ from bs4 import BeautifulSoup
 import requests
 import datetime
 
-
 class ChinaDailyScrapper(BaseCollector.BaseCollector):
 
     def get_article(self, url: str) -> dict:
@@ -20,9 +19,9 @@ class ChinaDailyScrapper(BaseCollector.BaseCollector):
         getBody = soup.findAll('div', attrs= {'id':'Content'})
         for row in getBody:
             for text in row.findAll('p'):
-                body.append(text.text)
+                body.append(text.text.replace(u'\xa0', u' '))
         
-        #If empty page, skip this link
+       #If empty page, skip this link
         if body == []:
             return
 
@@ -52,7 +51,7 @@ class ChinaDailyScrapper(BaseCollector.BaseCollector):
             "body": body,
             "title":  title,
             "date_of_publication": dateOfPublish,
-            "date_retrieved": datetime.datetime.now().strftime("%c"),
+            "date_retrieved":  datetime.date.today().strftime("%Y-%m-%d"),
             "url": url,
             "author": author,
             "publisher": 'China Daily',
@@ -80,9 +79,11 @@ class ChinaDailyScrapper(BaseCollector.BaseCollector):
                 links.append('https:' + row2.a['href'])
 
 
-        #Call get_article function with links collected in "links" list
+        #Call get_article function with links collected in "links" list and append it if it is a valid article (not null)
         for link in links:
-                articles.append(self.get_article(link))
+                article = self.get_article(link)
+                if article != None:
+                    articles.append(article)
 
         return articles 
     
