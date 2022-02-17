@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 from abc import ABC, abstractmethod
 # from GlobalNewsCollector.BaseCollector import BaseCollector
-from datetime import date
+from datetime import datetime
 
 from GlobalNewsCollector.BaseCollector import BaseCollector
 
@@ -44,7 +44,7 @@ class Yicai(BaseCollector):
 
         dictionary = {
             'date_published': date,
-            'date_retrieved': 'test',#date.today().strftime("%Y-%m-%d"),
+            'date_retrieved': datetime.today().strftime("%Y-%m-%d"),
             'url' : url,
             'title': title,
             'publisher': 'yicai',

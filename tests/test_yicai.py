@@ -1,6 +1,6 @@
 import unittest
 from GlobalNewsCollector.China.yicai import Yicai
-from datetime import date
+from datetime import datetime
 
 class TestScrapper(unittest.TestCase):
 
@@ -10,7 +10,7 @@ class TestScrapper(unittest.TestCase):
         article = collector.get_article(url)
         dictionary = {
             'date_published': "2022-01-27 16:54:25",
-            'date_retrieved': 'test', #date.today().strftime("%Y-%m-%d"),
+            'date_retrieved': datetime.today().strftime("%Y-%m-%d"),
             'url' : url,
             'title': "就地过年引发年货春运热潮，年前异地“孝心单”猛增",
             'publisher': 'yicai',
