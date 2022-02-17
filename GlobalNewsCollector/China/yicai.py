@@ -17,7 +17,6 @@ class Yicai(BaseCollector):
         article_list = []
 
         for article in articles.find_all('a', attrs={'class':'f-db'}, href=True):
-            print(article['href'])
             # Sometimes the topmost article is a "live article". Live articles don't seem relevant, thus they're skipped:
             if 'news' in article['href']:
                 article_list.append(self.get_article('https://www.yicai.com'+article['href']))
