@@ -4,6 +4,7 @@ from datetime import datetime
 
 class TestScrapper(unittest.TestCase):
 
+    # Test for get_article
     def test_article(self):
         collector = Yicai()
         url = "https://www.yicai.com/news/101303550.html"
@@ -21,11 +22,12 @@ class TestScrapper(unittest.TestCase):
         }
         self.assertEqual(article, dictionary)
 
+    # Test for get_articles_list
+    # Note that one could test the amount of articles retrieved only if we change the scrapper to include live articles
     def test_articles_list(self):
         collector = Yicai()
         url = "https://www.yicai.com/"
         list = collector.get_articles_list(url)
-        # self.assertEqual(len(list), 25) # Not ideal to test as there are sometimes live articles
         for article in list:
             self.assertTrue(article != None)
             self.assertIsInstance(article, dict)

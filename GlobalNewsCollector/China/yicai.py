@@ -18,6 +18,7 @@ class Yicai(BaseCollector):
 
         for article in articles.find_all('a', attrs={'class':'f-db'}, href=True):
             print(article['href'])
+            # Sometimes the topmost article is a "live article". Live articles don't seem relevant, thus they're skipped:
             if 'news' in article['href']:
                 article_list.append(self.get_article('https://www.yicai.com'+article['href']))
 
@@ -32,7 +33,9 @@ class Yicai(BaseCollector):
 
         article_info = soup.find('div', attrs={'class':'title f-pr'}) # article header, used to extract multiple dictionary entries
         title = article_info.h1.text
-        author = article_info.find('p', attrs={'class':'names'}).text.replace('\xa0',' ')# author formatted as '责编：' ('Responsible editor:') followed by the name
+
+        # Some articles only have a "Responsible editor", some have "Author", and some have both. Both currently included. 
+        author = article_info.find('p', attrs={'class':'names'}).text.replace('\xa0',' ')
         date = article_info.em.text # time in UTC+8, probably
 
         # text body currently doesn't filter away links and the like but can easily be modified for desired output format:
