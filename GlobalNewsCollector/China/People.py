@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import BaseCollector
 # from GlobalNewsCollector import BaseCollector
@@ -24,16 +25,19 @@ class People(BaseCollector.BaseCollector):
                 - Publisher
                 - Publisher url
         """
+        articleInfo = {}
         sort_webpage = url.replace("http://","").split(".")[0]
         print("sökord i url: " + sort_webpage)
-        r = requests.get(url)
+        if (sort_webpage != "society" and sort_webpage != "hb"):
+            r = requests.get(url)
+        else:
+            return articleInfo
         # soup = BeautifulSoup(r.content, 'html5lib').find('div', attrs={'class': 'layout rm_txt cf'})
-        articleInfo = {}
+       
 
         if (sort_webpage == "health"):
             soup = BeautifulSoup(r.content, 'html5lib').find('div', attrs={'class': 'articleCont'})
             articleInfo = get_health_article(soup, articleInfo, url)
-            pass
         elif (sort_webpage == "cpc"):
             soup = BeautifulSoup(r.content, 'html5lib').find('div', attrs={'class': 'p2j_con03 clearfix g-w1200'})
             articleInfo = get_cpc_article(soup, articleInfo, url)
@@ -95,6 +99,7 @@ class People(BaseCollector.BaseCollector):
             par = article.find('a', href=True)['href']
             print(par)
             articleList.append(self.get_article(par))
+            time.sleep(5)
             
         print(articleList)
         return articleList
@@ -107,7 +112,7 @@ def get_basic_article(soup, articleInfo, url) -> list:
         date_source_info = soup.find('div', attrs={'class': 'col-1-1 fl'}).text.strip().split("|")
     except AttributeError:
         date_source_info = soup.find('div', attrs={'class': 'col-1-1'}).text.strip().split("|")
-    articleInfo['date_published'] = date_source_info[0]
+    articleInfo['date_published'] = format_time(date_source_info[0])
     articleInfo['date_retrieved'] = date.today().strftime("%d-%m-%Y")
     articleInfo['url'] = url
 
@@ -143,8 +148,8 @@ def get_health_article(soup, articleInfo, url) -> list:
     # Retrive information under title and extract date published
     date_and_source = soup.find('div', attrs={'class': 'artOri'})
     date_and_source.find('a').decompose()
-    date_and_time = date_and_source.text.strip().replace("来源：", "GMT+8").replace("年","-").replace("月", "-").replace("日","")
-    articleInfo['date_published'] = date_and_time
+    # date_and_time = date_and_source.text.strip().replace("来源：", "GMT+8").replace("年","-").replace("月", "-").replace("日"," ")
+    articleInfo['date_published'] = format_time(date_and_source.text)
     articleInfo['date_retrieved'] = date.today().strftime("%d-%m-%Y")   
     articleInfo['url'] = url
 
@@ -179,9 +184,9 @@ def get_cpc_article(soup, articleInfo, url) -> list:
    
     # Retrive information under title and extract date published
     date_and_source = soup.find('p', attrs={'class': 'sou'})
-    date_and_source.find('a').decompose()
-    date_and_time = date_and_source.text.strip().replace("来源：", "GMT+8").replace("年","-").replace("月", "-").replace("日","").replace("\xa0\xa0\xa0\xa0"," ")
-    articleInfo['date_published'] = date_and_time
+    date_and_source.find('a').decompose().text
+    # date_and_time = date_and_source.text.strip().replace("来源：", "GMT+8").replace("年","-").replace("月", "-").replace("日"," ").replace("\xa0\xa0\xa0\xa0"," ")
+    articleInfo['date_published'] = format_time(date_and_source)
     articleInfo['date_retrieved'] = date.today().strftime("%d-%m-%Y")   
     articleInfo['url'] = url
 
@@ -209,6 +214,17 @@ def get_cpc_article(soup, articleInfo, url) -> list:
     articleInfo['body'] = body
     # print(articleInfo)
     return articleInfo
+
+def format_time(chinease_time):
+    
+    chinease_time = chinease_time.strip().replace("来源：", "").replace("年","-").replace("月", "-").replace("日"," ")
+
+    time_element = chinease_time.split(" ")
+
+    hour_min_element = time_element[1].split(":")
+
+    uct_hour = str(int(hour_min_element[0]) - 8)
+    return time_element[0]+" "+uct_hour+":"+hour_min_element[1]
 
 p = People()
 p.get_articles_list("http://www.people.com.cn/")
