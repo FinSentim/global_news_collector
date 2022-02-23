@@ -11,3 +11,4 @@ soupsieve==2.3.1
 urllib3==1.26.8
 webencodings==0.5.1
 wincertstore==0.2
+pytz==2021.3
