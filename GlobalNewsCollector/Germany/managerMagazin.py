@@ -86,4 +86,3 @@ class managerMagazin(metaclass=ABCMeta):
                                         article_list.append(dict)
 
                 return article_list
-
