@@ -87,3 +87,6 @@ class managerMagazin(metaclass=ABCMeta):
 
                 return article_list
 
+collector = managerMagazin()
+article = collector.get_article('https://www.manager-magazin.de/politik/ukraine-newsticker-die-invasion-hat-bereits-begonnen-a-c2572a10-2f5d-426b-99bd-d92771263090')
+print(article)

@@ -1,7 +1,9 @@
 from abc import ABCMeta
 import requests
 from bs4 import BeautifulSoup
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timezone 
+import pytz
+
 
 class Xinhuanet(metaclass=ABCMeta):
 
@@ -44,15 +46,20 @@ class Xinhuanet(metaclass=ABCMeta):
 
         # Getting date published for article.
         date_published = soup.find('div',attrs={"class":"info"})
-        date_published = date_published.text[0:20]
+        date_published = date_published.text[3:20]
         date_published = date_published.replace("\n","")
-
+        
+        # Converting date published to UTC time-zone.
+        date_published = datetime.strptime(date_published, '%y-%m-%d %H:%M:%S').replace(tzinfo=pytz.timezone('Asia/Shanghai'))
+        date_published = date_published.astimezone(pytz.UTC)
+        date_published = date_published.strftime("%Y-%m-%d %H:%M:%S")
+        
         title = soup.find('title') 
         title = title.text.split("-",1)[0]
         title = title.replace("\n","")
         
         # Getting todays date.
-        date_retrieved = date.today().strftime("%Y-%m-%d") 
+        date_retrieved = datetime.utcnow()
         
         # Adding everything to a dictionary.
         article_dict["date_published"] = date_published
@@ -85,6 +92,8 @@ class Xinhuanet(metaclass=ABCMeta):
 
         return article_list
 
-
+obj = Xinhuanet()
+URL = "http://www.news.cn/politics/2022-02/15/c_1128377172.htm"
+article = obj.get_article(URL)
 
 
