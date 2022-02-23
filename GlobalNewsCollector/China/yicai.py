@@ -46,7 +46,7 @@ class Yicai(BaseCollector):
 
         dictionary = {
             'date_published': date,
-            'date_retrieved': datetime.today().strftime("%Y-%m-%d"),
+            'date_retrieved': datetime.utcnow().strftime("%Y-%m-%d"),
             'url' : url,
             'title': title,
             'publisher': 'yicai',

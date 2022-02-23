@@ -10,7 +10,7 @@ class TestScrapper(unittest.TestCase):
         url = "https://www.yicai.com/news/101303550.html"
         article = collector.get_article(url)
         self.assertEqual(article['url'], url)
-        self.assertEqual(article['date_retrieved'],datetime.today().strftime("%Y-%m-%d"))
+        self.assertEqual(article['date_retrieved'],datetime.utcnow().strftime("%Y-%m-%d"))
 
     # Test for get_articles_list
     # Note that one could test the amount of articles retrieved only if we change the scrapper to include live articles
