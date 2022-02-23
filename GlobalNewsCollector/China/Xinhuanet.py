@@ -92,8 +92,5 @@ class Xinhuanet(metaclass=ABCMeta):
 
         return article_list
 
-obj = Xinhuanet()
-URL = "http://www.news.cn/politics/2022-02/15/c_1128377172.htm"
-article = obj.get_article(URL)
 
 
