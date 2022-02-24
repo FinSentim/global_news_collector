@@ -71,7 +71,6 @@ class People(BaseCollector.BaseCollector):
         for article in listOFArticles.find_all('li'):
             par = article.find('a', href=True)['href']
             if ("http" in par):
-                print(par)
                 article = self.get_article(par)
                 if (article != {}):
                     articleList.append(article)
