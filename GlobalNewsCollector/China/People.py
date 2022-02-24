@@ -1,6 +1,6 @@
 #import os
 #import sys
-#import time
+import time
 #sys.path.insert(1, os.path.join(sys.path[0], '..'))
 #import BaseCollector
 from GlobalNewsCollector import BaseCollector
@@ -29,10 +29,13 @@ class People(BaseCollector.BaseCollector):
         articleInfo = {}
         sort_webpage = url.replace("http://","").split(".")[0]
         
-        if (sort_webpage != "society" and sort_webpage != "hb" and sort_webpage != "he" and sort_webpage != "bj" and sort_webpage != "sd" and sort_webpage != "xz" and sort_webpage != "ah"):
-            r = requests.get(url)
-        else:
-            return articleInfo
+        # if (sort_webpage != "society" and sort_webpage != "hb" and sort_webpage != "he" and sort_webpage != "bj" and sort_webpage != "sd" and sort_webpage != "xz" and sort_webpage != "ah"):
+        start = time.time()
+        r = requests.get(url)
+        end = time.time()
+        print("Time to requests.get(): "+str(end-start)+"s")
+        # else:
+            # return articleInfo
        
 
         if (sort_webpage == "health"):
@@ -60,6 +63,7 @@ class People(BaseCollector.BaseCollector):
             url: The url of the website.
         Returns: A list containing a dictionary returned from get_article() for each article.
         """
+        start = time.time()
         r = requests.get(url) 
         soup = BeautifulSoup(r.content, 'html5lib')       
         articleList = []
@@ -79,6 +83,9 @@ class People(BaseCollector.BaseCollector):
                 articleList.remove(ds)
             index = index + 1
         # print(articleList)
+        # return articleList.pop()
+        end = time. time()
+        print("Time to run get_article_list(): " + str(end-start)+"s")
         return articleList
 
 
@@ -127,10 +134,8 @@ def get_health_article(soup, articleInfo, url) -> list:
     body = ""
     # Paragraphs should not have classes
     for paragraph in paragraph_table.find_all('p'):
-        if paragraph['style'] == "text-indent: 2em;":
-            body = body + paragraph.text.strip() 
-        else: 
-            pass
+        # if paragraph['style'] == "text-indent: 2em;":
+        body = body + paragraph.text.strip() 
     articleInfo['body'] = body
     return articleInfo
 
@@ -157,7 +162,7 @@ def format_time(chinease_time):
     chinease_time = chinease_time.strip().replace("来源：", "").replace("年","-").replace("月", "-").replace("日"," ")
     time_element = chinease_time.split(" ")
     hour_min_element = time_element[1].split(":")
-    uct_hour = str(int(hour_min_element[0]) - 8)
+    uct_hour = str((int(hour_min_element[0]) - 8 )% 24)
     return time_element[0]+" "+uct_hour+":"+hour_min_element[1]
 
 # Function returns the names inside the "responsible editors"-box. This box seem to always contain the right author and corresponding editor
@@ -170,5 +175,4 @@ def extract_author(div):
 
 # p = People()
 # oscar=p.get_articles_list("http://www.people.com.cn/")
-
 # p.get_article("http://cpc.people.com.cn/n1/2022/0216/c164113-32353542.html")
