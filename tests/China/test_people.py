@@ -14,6 +14,7 @@ class TestPeople(unittest.TestCase):
      
     c = People()
     
+    # Last article empty
     dictionaries = c.get_articles_list("http://www.people.com.cn/")
 
     # dictionaries = remove_empty_dicts(dictionaries1)
@@ -26,8 +27,8 @@ class TestPeople(unittest.TestCase):
     # the url to test.
     def test_get_article_body(self):
         for dictionary in self.dictionaries:
-            if dictionary != {}:
-                self.assertGreater(len(dictionary['body']),20)
+            # if dictionary != {}:
+            self.assertGreater(len(dictionary['body']),20)
     
     # Test that author is not an empty string which indicates wrongful extraction from website
     def test_author_structure(self):

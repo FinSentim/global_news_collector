@@ -1,8 +1,7 @@
-#import os
-#import sys
-import time
-#sys.path.insert(1, os.path.join(sys.path[0], '..'))
-#import BaseCollector
+import os
+import sys
+# sys.path.insert(1, os.path.join(sys.path[0], '..'))
+# import BaseCollector
 from GlobalNewsCollector import BaseCollector
 import requests
 from bs4 import BeautifulSoup
@@ -26,18 +25,22 @@ class People(BaseCollector.BaseCollector):
                 - Publisher
                 - Publisher url
         """
+        time_consuming_pages = ["society","hb","he","bj","sd","xz","ah","hi"]
         articleInfo = {}
-        sort_webpage = url.replace("http://","").split(".")[0]
+        sort_webpage = url.strip().replace("http://","").split(".")[0]
         
-        # if (sort_webpage != "society" and sort_webpage != "hb" and sort_webpage != "he" and sort_webpage != "bj" and sort_webpage != "sd" and sort_webpage != "xz" and sort_webpage != "ah"):
-        start = time.time()
-        r = requests.get(url)
-        end = time.time()
-        print("Time to requests.get(): "+str(end-start)+"s")
-        # else:
-            # return articleInfo
-       
+        # To skip long request calls to url, set this variable to True
+        skip_time_consuming_articles = True
 
+        if (skip_time_consuming_articles):
+            if (sort_webpage in time_consuming_pages):
+                return articleInfo
+            else:
+                r = requests.get(url)
+        else:
+            r = requests.get(url)
+
+        # Some types of articles have different structures
         if (sort_webpage == "health"):
             soup = BeautifulSoup(r.content, 'html5lib').find('div', attrs={'class': 'articleCont'})
             articleInfo = get_health_article(soup, articleInfo, url)
@@ -63,7 +66,7 @@ class People(BaseCollector.BaseCollector):
             url: The url of the website.
         Returns: A list containing a dictionary returned from get_article() for each article.
         """
-        start = time.time()
+        
         r = requests.get(url) 
         soup = BeautifulSoup(r.content, 'html5lib')       
         articleList = []
@@ -72,20 +75,31 @@ class People(BaseCollector.BaseCollector):
         listOFArticles = soup.find('ul', attrs={'class':'cf blist1'})
         for article in listOFArticles.find_all('li'):
             par = article.find('a', href=True)['href']
-            print(par)
-            articleList.append(self.get_article(par))
+            if ("http" in par):
+                print(par)
+                article = self.get_article(par)
+                if (article != {}):
+                    articleList.append(article)
+            else:
+                continue
             #time.sleep(5)
         index = 0
-        for ds in articleList:
-            if ds=={}:
-                # print(ds)
-                # print("index = "+str(index))
-                articleList.remove(ds)
-            index = index + 1
+        # for ds in articleList:
+        #     if ds=={}:
+        #         # print(ds)
+        #         # print("index = "+str(index))
+        #         articleList.remove(ds)
+        #     index = index + 1
+        # for index in range(articleList):
+        #     if articleList[index]=={}:
+        #         # print(ds)
+        #         # print("index = "+str(index))
+        #         del articleList[index]
+        #         # articleList.remove(index)
+        #     index = index + 1
         # print(articleList)
         # return articleList.pop()
-        end = time. time()
-        print("Time to run get_article_list(): " + str(end-start)+"s")
+        
         return articleList
 
 
@@ -173,6 +187,7 @@ def extract_author(div):
         return div.find('div', attrs={'class':'editor'}).text.replace("(责编：", "").replace(")","")
 
 
-# p = People()
-# oscar=p.get_articles_list("http://www.people.com.cn/")
+p = People()
+oscar=p.get_articles_list("http://www.people.com.cn/")
+print(oscar)
 # p.get_article("http://cpc.people.com.cn/n1/2022/0216/c164113-32353542.html")
