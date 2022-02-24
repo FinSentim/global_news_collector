@@ -1,11 +1,6 @@
-import os
-import sys
-# sys.path.insert(1, os.path.join(sys.path[0], '..'))
-# import BaseCollector
 from GlobalNewsCollector import BaseCollector
 import requests
 from bs4 import BeautifulSoup
-#from datetime import date
 from datetime import datetime
 
 class People(BaseCollector.BaseCollector):
@@ -43,13 +38,13 @@ class People(BaseCollector.BaseCollector):
         # Some types of articles have different structures
         if (sort_webpage == "health"):
             soup = BeautifulSoup(r.content, 'html5lib').find('div', attrs={'class': 'articleCont'})
-            articleInfo = get_health_article(soup, articleInfo, url)
+            articleInfo = get_health_article(soup, articleInfo)
         elif (sort_webpage == "cpc"):
             soup = BeautifulSoup(r.content, 'html5lib').find('div', attrs={'class': 'p2j_con03 clearfix g-w1200'})
-            articleInfo = get_cpc_article(soup, articleInfo, url)
+            articleInfo = get_cpc_article(soup, articleInfo)
         else:
             soup = BeautifulSoup(r.content, 'html5lib').find('div', attrs={'class': 'layout rm_txt cf'})
-            articleInfo = get_basic_article(soup, articleInfo, url)
+            articleInfo = get_basic_article(soup, articleInfo)
 
         # Add shared information thats independent from HTML code
         articleInfo['publisher'] = "Central Committee of the Chinese Communist Party"
@@ -82,29 +77,21 @@ class People(BaseCollector.BaseCollector):
                     articleList.append(article)
             else:
                 continue
-            #time.sleep(5)
-        index = 0
-        # for ds in articleList:
-        #     if ds=={}:
-        #         # print(ds)
-        #         # print("index = "+str(index))
-        #         articleList.remove(ds)
-        #     index = index + 1
-        # for index in range(articleList):
-        #     if articleList[index]=={}:
-        #         # print(ds)
-        #         # print("index = "+str(index))
-        #         del articleList[index]
-        #         # articleList.remove(index)
-        #     index = index + 1
-        # print(articleList)
-        # return articleList.pop()
         
         return articleList
 
 
-def get_basic_article(soup, articleInfo, url) -> list:
-    
+def get_basic_article(soup, articleInfo) -> list:
+    """
+        Handles most article structures.
+        ---
+        Args:
+            soup: The instance of soup for the specific url
+            articleInfo: The dictionary related to the specific article
+        Returns: 
+            The updated version of articleInfo
+    """
+
     # Retrive information under title and extract date published
     try:
         date_source_info = soup.find('div', attrs={'class': 'col-1-1 fl'}).text.strip().split("|")
@@ -116,9 +103,6 @@ def get_basic_article(soup, articleInfo, url) -> list:
         articleInfo['title'] = soup.find('div', attrs={'class':'col col-1 fl'}).find('h1').text
     except AttributeError:
         articleInfo['title'] = soup.find('div', attrs={'class':'col col-1'}).find('h1').text
-
-    articleInfo['publisher'] = "Central Committee of the Chinese Communist Party"
-    articleInfo['publisher_url'] = "http://www.people.com.cn" 
 
     # Extract article info:
     paragraph_table = soup.find('div', attrs={'class':'rm_txt_con cf'})
@@ -134,7 +118,16 @@ def get_basic_article(soup, articleInfo, url) -> list:
     
     return articleInfo
 
-def get_health_article(soup, articleInfo, url) -> list:
+def get_health_article(soup, articleInfo) -> list:
+    """
+        Handles health-article structures.
+        ---
+        Args:
+            soup: The instance of soup for the specific url
+            articleInfo: The dictionary related to the specific article
+        Returns: 
+            The updated version of articleInfo
+    """
    
     # Retrive information under title and extract date published
     date_and_source = soup.find('div', attrs={'class': 'artOri'})
@@ -146,25 +139,35 @@ def get_health_article(soup, articleInfo, url) -> list:
     # Extract article info:
     paragraph_table = soup.find('div', attrs={'class':'artDet'})
     body = ""
-    # Paragraphs should not have classes
+
     for paragraph in paragraph_table.find_all('p'):
-        # if paragraph['style'] == "text-indent: 2em;":
         body = body + paragraph.text.strip() 
     articleInfo['body'] = body
     return articleInfo
 
-def get_cpc_article(soup, articleInfo, url) -> list:
-   
+def get_cpc_article(soup, articleInfo) -> list:
+    """
+        Function handles specific design of "cpc" links.
+        ---
+        Args:
+            soup: The instance of soup for the specific url
+            articleInfo: The dictionary related to the specific article
+        Returns: 
+            The updated version of articleInfo
+    """
     # Retrive information under title and extract date published
     date_and_source = soup.find('p', attrs={'class': 'sou'})
     date_and_source.find('a').decompose().text
     articleInfo['date_published'] = format_time(date_and_source)
+
     # Handle missing author articles
     articleInfo['author'] = extract_author(soup)
     articleInfo['title'] = soup.find('div', attrs={'class':'text_c'}).find('h1').text
+
     # Extract article info:
     paragraph_table = soup.find('div', attrs={'class':'show_text'})
     body = ""
+
     # Paragraphs should not have classes
     for paragraph in paragraph_table.find_all('p'):
         body = body + paragraph.text.strip() 
@@ -172,22 +175,30 @@ def get_cpc_article(soup, articleInfo, url) -> list:
     return articleInfo
 
 def format_time(chinease_time):
-    
+    """
+        Function converts time through string manipulation
+        ---
+        Args:
+            chinese_time: string of GMT +8 time representation
+        Returns: UCT time represented as a string\n
+                
+    """
     chinease_time = chinease_time.strip().replace("来源：", "").replace("年","-").replace("月", "-").replace("日"," ")
     time_element = chinease_time.split(" ")
     hour_min_element = time_element[1].split(":")
     uct_hour = str((int(hour_min_element[0]) - 8 )% 24)
     return time_element[0]+" "+uct_hour+":"+hour_min_element[1]
 
-# Function returns the names inside the "responsible editors"-box. This box seem to always contain the right author and corresponding editor
-def extract_author(div):
+def extract_author(soup):
+    """
+        Function that extracts the author/editor from an article based on the structure of the html code.
+        ---
+        Args:
+            soup: The instance of soup for the specific url
+        Returns: 
+            The author
+    """
     try:
-        return div.find('div', attrs={'class':'edit cf'}).text.replace("(责编：", "").replace(")","")
+        return soup.find('div', attrs={'class':'edit cf'}).text.replace("(责编：", "").replace(")","")
     except AttributeError:
-        return div.find('div', attrs={'class':'editor'}).text.replace("(责编：", "").replace(")","")
-
-
-p = People()
-oscar=p.get_articles_list("http://www.people.com.cn/")
-print(oscar)
-# p.get_article("http://cpc.people.com.cn/n1/2022/0216/c164113-32353542.html")
+        return soup.find('div', attrs={'class':'editor'}).text.replace("(责编：", "").replace(")","")
