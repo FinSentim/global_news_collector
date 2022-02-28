@@ -7,7 +7,6 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 import time
-# import eventlet
 
 class People(BaseCollector.BaseCollector):
 
@@ -33,15 +32,18 @@ class People(BaseCollector.BaseCollector):
         # To skip long request calls to url, set this variable to True
         skip_time_consuming_articles = False
         # Timeout limit for requests.get(), applicable only if above var set to True
-        timeout_limit = 1
+        timeout_limit = 10
         if (skip_time_consuming_articles):
+            # if url is of known timeconsuming request call, skip and return empty dict
             if (sort_webpage in time_consuming_pages):
                 return articleInfo
             else:
                 r = requests.get(url)
         else:
             start = time.time()
-            r = requests.get(url, timeout=timeout_limit)
+            # make get request but with selected timeout value.
+            # see https://docs.python-requests.org/en/master/user/advanced/#timeouts for detailed description
+            r = requests.get(url, timeout=timeout_limit) 
             end = time.time()
             print("Time to get article: " + str(end-start))
 
@@ -74,27 +76,27 @@ class People(BaseCollector.BaseCollector):
             url: The url of the website.
         Returns: A list containing a dictionary returned from get_article() for each article.
         """
-        
+        s = time.time()
         r = requests.get(url) 
         soup = BeautifulSoup(r.content, 'html5lib')       
         articleList = []
-        not_printed = []
         # Start extraxting articles from the startpage
         listOFArticles = soup.find('div', attrs={'class':'main'})
         for article in listOFArticles.find_all('li'):
+            # Try every every found link
             try:
                 par = article.find('a', href=True)['href']
                 if ("people.com.cn/n" in par):
-                        # print(par)
                         article = self.get_article(par)
                         if (article != {}):
                             articleList.append(article)
-                        else:
-                            not_printed.append(par)
                 else:
                     continue
+            # If link did not match implementeted html structure in get_articles(), move on.
             except Exception:
                 continue
+        e = time.time()
+        print("time to run all articles with a 10s timeout value on request.get(): " + str(e-s)+"s")
         return articleList
 
 
