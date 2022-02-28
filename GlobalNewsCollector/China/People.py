@@ -1,7 +1,13 @@
-from GlobalNewsCollector import BaseCollector
+import os
+import sys
+sys.path.insert(1, os.path.join(sys.path[0], '..'))
+import BaseCollector
+# from GlobalNewsCollector import BaseCollector
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
+import time
+# import eventlet
 
 class People(BaseCollector.BaseCollector):
 
@@ -25,16 +31,23 @@ class People(BaseCollector.BaseCollector):
         sort_webpage = url.strip().replace("http://","").split(".")[0]
         
         # To skip long request calls to url, set this variable to True
-        skip_time_consuming_articles = True
-
+        skip_time_consuming_articles = False
+        # Timeout limit for requests.get(), applicable only if above var set to True
+        timeout_limit = 1
         if (skip_time_consuming_articles):
             if (sort_webpage in time_consuming_pages):
                 return articleInfo
             else:
                 r = requests.get(url)
         else:
-            r = requests.get(url)
+            start = time.time()
+            r = requests.get(url, timeout=timeout_limit)
+            end = time.time()
+            print("Time to get article: " + str(end-start))
 
+        if r == None:
+            return articleInfo
+        
         # Some types of articles have different structures
         if (sort_webpage == "health"):
             soup = BeautifulSoup(r.content, 'html5lib').find('div', attrs={'class': 'articleCont'})
@@ -71,6 +84,7 @@ class People(BaseCollector.BaseCollector):
         for article in listOFArticles.find_all('li'):
             par = article.find('a', href=True)['href']
             if ("http" in par):
+                print(par)
                 article = self.get_article(par)
                 if (article != {}):
                     articleList.append(article)
@@ -201,3 +215,8 @@ def extract_author(soup):
         return soup.find('div', attrs={'class':'edit cf'}).text.replace("(责编：", "").replace(")","")
     except AttributeError:
         return soup.find('div', attrs={'class':'editor'}).text.replace("(责编：", "").replace(")","")
+
+
+p = People()
+p.get_articles_list("http://www.people.com.cn/")
+# p.get_article("http://society.people.com.cn/n1/2022/0223/c1008-32357773.html")
