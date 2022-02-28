@@ -1,8 +1,8 @@
-import os
-import sys
-sys.path.insert(1, os.path.join(sys.path[0], '..'))
-import BaseCollector
-# from GlobalNewsCollector import BaseCollector
+# import os
+# import sys
+# sys.path.insert(1, os.path.join(sys.path[0], '..'))
+# import BaseCollector
+from GlobalNewsCollector import BaseCollector
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
@@ -78,19 +78,23 @@ class People(BaseCollector.BaseCollector):
         r = requests.get(url) 
         soup = BeautifulSoup(r.content, 'html5lib')       
         articleList = []
-        
-        # Start extraxting articles from "hotspot" - section
-        listOFArticles = soup.find('ul', attrs={'class':'cf blist1'})
+        not_printed = []
+        # Start extraxting articles from the startpage
+        listOFArticles = soup.find('div', attrs={'class':'main'})
         for article in listOFArticles.find_all('li'):
-            par = article.find('a', href=True)['href']
-            if ("http" in par):
-                print(par)
-                article = self.get_article(par)
-                if (article != {}):
-                    articleList.append(article)
-            else:
+            try:
+                par = article.find('a', href=True)['href']
+                if ("people.com.cn/n" in par):
+                        # print(par)
+                        article = self.get_article(par)
+                        if (article != {}):
+                            articleList.append(article)
+                        else:
+                            not_printed.append(par)
+                else:
+                    continue
+            except Exception:
                 continue
-        
         return articleList
 
 
@@ -217,6 +221,6 @@ def extract_author(soup):
         return soup.find('div', attrs={'class':'editor'}).text.replace("(责编：", "").replace(")","")
 
 
-p = People()
-p.get_articles_list("http://www.people.com.cn/")
+# p = People()
+# p.get_articles_list("http://www.people.com.cn/")
 # p.get_article("http://society.people.com.cn/n1/2022/0223/c1008-32357773.html")
