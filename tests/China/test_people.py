@@ -7,12 +7,13 @@ class TestPeople(unittest.TestCase):
     c = People()
     dictionaries = c.get_articles_list("http://www.people.com.cn/")
 
-    # Test the "structure" of the body section of an article, will fail if website structure changes and scrap not possible
-    # This test is more general, since all articles should have at least 20 words worth of reading. Just change
-    # the url to test.
+    # Some websites contains only pictures and title, therefor tests that the average length of all articles exceeds 20 characters. 
     def test_get_article_body(self):
+        tot_lenght = 0
         for dictionary in self.dictionaries:
-            self.assertGreater(len(dictionary['body']),20)
+            tot_lenght = tot_lenght + len(dictionary['body'])
+        avg_length = tot_lenght / len(self.dictionaries)
+        self.assertGreater(avg_length,20)
     
     # Test that author is not an empty string which indicates wrongful extraction from website
     def test_author_structure(self):
