@@ -1,13 +1,11 @@
-# import os
-# import sys
-# sys.path.insert(1, os.path.join(sys.path[0], '..'))
-# import BaseCollector
-from GlobalNewsCollector import BaseCollector
+import os
+import sys
+sys.path.insert(1, os.path.join(sys.path[0], '..'))
+import BaseCollector
+# from GlobalNewsCollector import BaseCollector
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
-import time
-
 class People(BaseCollector.BaseCollector):
 
     def get_article(self, url: str) -> dict:
@@ -25,31 +23,22 @@ class People(BaseCollector.BaseCollector):
                 - Publisher
                 - Publisher url
         """
-        time_consuming_pages = ["society","hb","he","bj","sd","xz","ah","hi"]
         articleInfo = {}
         sort_webpage = url.strip().replace("http://","").split(".")[0]
         
-        # To skip long request calls to url, set this variable to True
-        skip_time_consuming_articles = False
-        # Timeout limit for requests.get(), applicable only if above var set to True
-        timeout_limit = 10
-        if (skip_time_consuming_articles):
-            # if url is of known timeconsuming request call, skip and return empty dict
-            if (sort_webpage in time_consuming_pages):
-                return articleInfo
-            else:
-                r = requests.get(url)
+        # Set to true to implement request lib timeout, set timeout_limit variable to desired limit
+        use_timeout = True 
+        timeout_limit = 5
+        if(use_timeout):
+            r = requests.get(url, timeout=timeout_limit)
         else:
-            start = time.time()
-            # make get request but with selected timeout value.
-            # see https://docs.python-requests.org/en/master/user/advanced/#timeouts for detailed description
-            r = requests.get(url, timeout=timeout_limit) 
-            end = time.time()
-            print("Time to get article: " + str(end-start))
+            r = requests.get(url)
 
+        # If non-valid link -> return an empty dict that will be ignored
         if r == None:
             return articleInfo
-        
+
+
         # Some types of articles have different structures
         if (sort_webpage == "health"):
             soup = BeautifulSoup(r.content, 'html5lib').find('div', attrs={'class': 'articleCont'})
@@ -76,7 +65,6 @@ class People(BaseCollector.BaseCollector):
             url: The url of the website.
         Returns: A list containing a dictionary returned from get_article() for each article.
         """
-        s = time.time()
         r = requests.get(url) 
         soup = BeautifulSoup(r.content, 'html5lib')       
         articleList = []
@@ -95,8 +83,6 @@ class People(BaseCollector.BaseCollector):
             # If link did not match implementeted html structure in get_articles(), move on.
             except Exception:
                 continue
-        e = time.time()
-        print("time to run all articles with a 10s timeout value on request.get(): " + str(e-s)+"s")
         return articleList
 
 
@@ -222,7 +208,6 @@ def extract_author(soup):
     except AttributeError:
         return soup.find('div', attrs={'class':'editor'}).text.replace("(责编：", "").replace(")","")
 
-
-# p = People()
-# p.get_articles_list("http://www.people.com.cn/")
+p = People()
+p.get_articles_list("http://www.people.com.cn/")
 # p.get_article("http://society.people.com.cn/n1/2022/0223/c1008-32357773.html")
