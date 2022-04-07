@@ -6,18 +6,7 @@ from readabilipy import simple_json_from_html_string ## requires nodejs version 
 from readabilipy import simple_tree_from_html_string
 import lxml.html.clean
 
-# req = requests.get('http://world.people.com.cn/n1/2022/0404/c1002-32391390.html')
-# req = requests.get('https://www.bhaskar.com/')
-req = requests.get('https://www.bhaskar.com/local/uttar-pradesh/agra/news/golden-opportunity-to-make-career-in-hospitality-sector-apply-for-admission-in-heritage-institute-of-hotel-and-tourism-agra-129614083.html')
-# req = requests.get('https://www.svd.se/naringsliv/motor')
-# req = requests.get('https://www.aftonbladet.se/nyheter/a/ALV5Pn/ryska-elever-anger-larare-som-kallar-kriget-for-krig')
-# Fix encoding for non-latin characters
-# Changes the encoding for the webpage from utf-8 to GBK
-req.raise_for_status()
-req.encoding = req.apparent_encoding
-# req.encoding = "GBK"
 
-# soup = BeautifulSoup(req.content, 'html5lib')
 
 
 def get_article_bytree(url: str):
@@ -62,6 +51,70 @@ get_article_bytree('http://world.people.com.cn/n1/2022/0404/c1002-32391390.html'
 # print(" ")
 # get_article_bytree('https://www.manager-magazin.de/finanzen/bundesbank-praesident-joachim-nagel-glaubt-an-baldigen-zinsanstieg-a-58d5345b-db65-4262-ad46-4e447eb955a2')
 # get_article_bytree('https://hindi.business-standard.com/storypage.php?autono=186301')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# req = requests.get('http://world.people.com.cn/n1/2022/0404/c1002-32391390.html')
+# req = requests.get('https://www.bhaskar.com/')
+req = requests.get('https://www.bhaskar.com/local/uttar-pradesh/agra/news/golden-opportunity-to-make-career-in-hospitality-sector-apply-for-admission-in-heritage-institute-of-hotel-and-tourism-agra-129614083.html')
+# req = requests.get('https://www.svd.se/naringsliv/motor')
+# req = requests.get('https://www.aftonbladet.se/nyheter/a/ALV5Pn/ryska-elever-anger-larare-som-kallar-kriget-for-krig')
+# Fix encoding for non-latin characters
+# Changes the encoding for the webpage from utf-8 to GBK
+req.raise_for_status()
+req.encoding = req.apparent_encoding
+# req.encoding = "GBK"
+
+# soup = BeautifulSoup(req.content, 'html5lib')
+
+
+
 # article = simple_json_from_html_string(req.text, use_readability=True)
 
 # # s = article['title']
