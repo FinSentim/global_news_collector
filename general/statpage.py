@@ -21,7 +21,7 @@ def get_article_bytree(url: str):
 
     # Send response thruog readabilipy
     tree = simple_tree_from_html_string(r.text)
-    print(tree.prettify())
+    # print(tree.prettify())
     title = ""
     article = ""
 
@@ -40,16 +40,16 @@ def get_article_bytree(url: str):
 
     
 
-    # print(article)
+    print(article)
     
 
 
-get_article_bytree('http://world.people.com.cn/n1/2022/0404/c1002-32391390.html')
+# get_article_bytree('http://world.people.com.cn/n1/2022/0404/c1002-32391390.html')
 # get_article_bytree('https://www.aftonbladet.se/nyheter/a/ALV5Pn/ryska-elever-anger-larare-som-kallar-kriget-for-krig')
 # print(" ")
 # get_article_bytree('https://www.theguardian.com/world/2022/apr/07/turkish-court-sends-case-of-26-accused-over-khashoggi-killing-to-saudi-arabia')
 # print(" ")
-# get_article_bytree('https://www.manager-magazin.de/finanzen/bundesbank-praesident-joachim-nagel-glaubt-an-baldigen-zinsanstieg-a-58d5345b-db65-4262-ad46-4e447eb955a2')
+get_article_bytree('https://www.manager-magazin.de/finanzen/bundesbank-praesident-joachim-nagel-glaubt-an-baldigen-zinsanstieg-a-58d5345b-db65-4262-ad46-4e447eb955a2')
 # get_article_bytree('https://hindi.business-standard.com/storypage.php?autono=186301')
 
 
