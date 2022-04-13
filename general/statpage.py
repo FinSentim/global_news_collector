@@ -4,7 +4,9 @@ import requests
 from bs4 import BeautifulSoup
 from readabilipy import simple_json_from_html_string ## requires nodejs version > 10
 from readabilipy import simple_tree_from_html_string
-import lxml.html.clean
+
+# Langue detection libs
+from lingua import Language, LanguageDetectorBuilder
 
 
 
@@ -38,6 +40,9 @@ def get_article_bytree(url: str):
     for row in tree.findAll('p'):
         article = article + row.text
 
+    languages = [Language.ENGLISH, Language.HINDI, Language.FRENCH, Language.GERMAN, Language.SPANISH, Language.CHINESE]
+    detector = LanguageDetectorBuilder.from_languages(*languages).build()
+    print(detector.detect_language_of(article))
     
 
     print(article)
@@ -49,8 +54,8 @@ def get_article_bytree(url: str):
 # print(" ")
 # get_article_bytree('https://www.theguardian.com/world/2022/apr/07/turkish-court-sends-case-of-26-accused-over-khashoggi-killing-to-saudi-arabia')
 # print(" ")
-get_article_bytree('https://www.manager-magazin.de/finanzen/bundesbank-praesident-joachim-nagel-glaubt-an-baldigen-zinsanstieg-a-58d5345b-db65-4262-ad46-4e447eb955a2')
-# get_article_bytree('https://hindi.business-standard.com/storypage.php?autono=186301')
+# get_article_bytree('https://www.manager-magazin.de/finanzen/bundesbank-praesident-joachim-nagel-glaubt-an-baldigen-zinsanstieg-a-58d5345b-db65-4262-ad46-4e447eb955a2')
+get_article_bytree('https://hindi.business-standard.com/storypage.php?autono=186301')
 
 
 
