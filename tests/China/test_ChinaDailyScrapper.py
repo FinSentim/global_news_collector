@@ -28,7 +28,6 @@ class TestChinaDailyScrapper(unittest.TestCase):
         links = collector.get_articles_list(url)
         for article in links:
             self.assertTrue(article != None)
-        self.assertEqual(len(links),34)
 
 if __name__ == '__main__':
     unittest.main()
