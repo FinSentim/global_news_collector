@@ -30,14 +30,6 @@ class TestCaixin(unittest.TestCase):
         url = "https://www.caixin.com/2022-02-07/101838615.html"
         body = c.get_article(url)['body']
         self.assertGreater(len(body),20)
-        
-    
-    #   Test that all articles from latest news has been scraped
-    def test_get_article_list(self):
-        c = caixin()
-        url = "https://www.caixin.com/"
-        actual_length = len(c.get_articles_list(url))
-        self.assertEqual(actual_length,28)
 
     #   Ensure the get_list_article returns a list of dictionaries
     def test_get_article_list_structure(self):
