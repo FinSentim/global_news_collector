@@ -1,4 +1,3 @@
-from curses.ascii import FF
 import requests 
 import re
 from bs4 import BeautifulSoup
