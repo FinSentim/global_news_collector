@@ -1,4 +1,5 @@
 from nntplib import ArticleInfo
+from turtle import title
 from bs4 import BeautifulSoup
 from readabilipy import simple_tree_from_html_string, simple_json_from_html_string
 from lingua import LanguageDetectorBuilder
@@ -78,11 +79,12 @@ class GeneralScraper(BaseCollector.BaseCollector):
 
         articleInfo = {}
         articleInfo = self.__extract_metadata(url, r)
-        articleInfo = self.__extract_body_title(tree)
+        articleInfo = self.__extract_body_title(tree, articleInfo)
         
-        # add language of article text
+        # add language of article text,
+        
         lang = self.detector.detect_language_of(articleInfo['body'])
-        articleInfo['language'] = str(lang).split(".")[1]
+        articleInfo['language'] = str(lang).split(".")[1] if lang != None else ""
 
         articleInfo = self.__compare_article(articleInfo, r)
 
@@ -95,10 +97,24 @@ class GeneralScraper(BaseCollector.BaseCollector):
         
         articleInfo['url'] = url
         articleInfo['date_retrieved'] = datetime.utcnow().strftime("%d-%m-%Y %H:%M")
+        print("författare: "+articleInfo['author'])
         
         return articleInfo
 
-    def __extract_metadata(self, url: str, r: requests.Response):
+    def __extract_metadata(self, url: str, r: requests.Response) -> dict:
+        """
+        Creates a dictionary and utilizes the functionality of metadata.py inorder to get the articles metadata if it exits
+        ---
+        Args:
+            url: the article url
+            r: the response from the http request
+        Returns:
+            A dictionary containing the infromation found from the metadata\n
+            - title
+            - author
+            - date published
+        """
+
         soup = BeautifulSoup(r.content, 'html.parser')
         articleInfo = get_metadata(url, soup)
 
@@ -176,7 +192,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
             validity = True
         return validity
 
-    def __extract_body_title(self, tree) -> dict:
+    def __extract_body_title(self, tree, articleInfo: dict) -> dict:
         """
         Method parses a html-tree for relevant infomration gatherd from the readabilipy library.
         ---
@@ -197,11 +213,14 @@ class GeneralScraper(BaseCollector.BaseCollector):
             # Get the article body
             for row in tree.findAll('p'):
                 body = body + row.text
-
+            articleInfo['body'] = body
+            if articleInfo['title'] == "":
+                articleInfo['title'] = title
             # Create dictionary that contains body and title 
-            return {'body':body, 'title':title}
+            return articleInfo
         except AttributeError:
-            return {'body':body, 'title':title}
+            articleInfo['body'] = body
+            return articleInfo
 
         
 
@@ -214,8 +233,11 @@ gs = GeneralScraper()
 # a = gs.get_article('http://finance.people.com.cn/n1/2022/0414/c1004-32398913.html')
 # a = gs.get_article('https://www.manager-magazin.de/finanzen/bundesbank-praesident-joachim-nagel-glaubt-an-baldigen-zinsanstieg-a-58d5345b-db65-4262-ad46-4e447eb955a2')
 # a = gs.get_article('https://www.theguardian.com/world/2022/apr/18/macron-lead-over-le-pen-stabilises-as-election-scrutiny-intensifies')
-print(gs.get_articles_list('http://www.people.com.cn/'))
-# print(a)http://www.people.com.cn/
+# a = gs.get_article('http://paper.people.com.cn/rmrb/index.html')
+a = gs.get_article('http://politics.people.com.cn/n1/2022/0419/c1024-32403180.html')
+# print(gs.get_articles_list('http://www.people.com.cn/'))
+print(a)
+# http://www.people.com.cn/
 # for key in a.values():
 #     print(key)
 #     print(" ")
