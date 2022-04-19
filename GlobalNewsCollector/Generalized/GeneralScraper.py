@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 from readabilipy import simple_tree_from_html_string, simple_json_from_html_string
-from lingua import LanguageDetectorBuilder
+from lingua import LanguageDetectorBuilder, Language
 import langid
 from langdetect import detect 
 from datetime import datetime
@@ -24,7 +24,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
         # instantiate the language detector, and decide on what languages it should be able to detect
         # self.languages = [Language.ENGLISH, Language.HINDI, Language.GERMAN, Language.CHINESE, Language.SWEDISH]
 
-        self.acceptedLanguages = ['HINDI', 'GERMAN', 'CHINESE']
+        self.acceptedLanguages = ['HINDI', 'GERMAN', 'CHINESE',]
         self.detector = LanguageDetectorBuilder.from_all_languages().build()
 
     def get_article(self, url: str) -> dict:
@@ -44,12 +44,12 @@ class GeneralScraper(BaseCollector.BaseCollector):
         """
         r = requests.get(url)
         # fix encoding to handle different langauages
-        # r.encoding = r.apparent_encoding
+        r.encoding = r.apparent_encoding
         # Send response through readabilipy and get a parsable HTML tree
         tree = simple_tree_from_html_string(r.text)
 
         articleInfo = {}
-        articleInfo = self.__parseCleanHTMLTree(tree)
+        articleInfo = self.__extractBodyTitle(tree)
         
         articleInfo = self.__compareArticle(articleInfo, r)
 
@@ -68,7 +68,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
         
     def __compareArticle(self, articleInfo: dict, resp: requests.Response) -> dict:
         """
-        Metod compares the scraped information from cleant html tree with information returned from readabilipy library
+        Metod compares the scraped information from cleaned html tree with information returned from readabilipy library
         ---
         Args: \n
             articleInfo: Dictionary containging the scraped info from the clean HTML tree
@@ -95,6 +95,16 @@ class GeneralScraper(BaseCollector.BaseCollector):
 
 
     def __validateArticleBody(self, body: str) -> bool:
+
+        """
+        Method checks validity of article.
+        Args: \n
+            body: string of arcitle body. 
+        Returns: \n
+            A bool returning whether or not the article is sensible. Checking both length and language. 
+            Accepted languages: GERMAN, HINDI, CHINESE 
+        
+        """
         validity = False
 
         # Ensure body is long enough
@@ -103,15 +113,20 @@ class GeneralScraper(BaseCollector.BaseCollector):
             return validity
 
         lang = self.detector.detect_language_of(body)
-        # print(detect(body))
-        print(langid.classify(body))
-        print(lang)
         # Extract the specific language name and check whether is is an accepted language or not
         if (str(lang).split('.')[1] in self.acceptedLanguages):
             validity = True
         return validity
 
-    def __parseCleanHTMLTree(self, tree) -> dict:
+    def __extractBodyTitle(self, tree) -> dict:
+        """
+        Method parses a html-tree for relevant infomration gatherd from the readabilipy library.
+        ---
+        Args: \n
+            tree: a cleaned html tree that has been parsed by the readabilipy library
+        Returns: \n
+            returns a dictonary containing the found article body and found title
+        """
         body, title = "", ""
         try:
             # Try to fetch the title
@@ -140,6 +155,7 @@ gs = GeneralScraper()
 a = gs.get_article('http://world.people.com.cn/n1/2022/0404/c1002-32391390.html')
 # a = gs.get_article('http://finance.people.com.cn/n1/2022/0414/c1004-32398913.html')
 # a = gs.get_article('https://www.manager-magazin.de/finanzen/bundesbank-praesident-joachim-nagel-glaubt-an-baldigen-zinsanstieg-a-58d5345b-db65-4262-ad46-4e447eb955a2')
+# a = gs.get_article('https://www.theguardian.com/world/2022/apr/18/macron-lead-over-le-pen-stabilises-as-election-scrutiny-intensifies')
 # print(a)
 # for key in a.values():
 #     print(key)
