@@ -4,16 +4,17 @@ from lingua import LanguageDetectorBuilder
 from datetime import datetime
 import requests
 import re
-# from GlobalNewsCollector.Generalized import LinkPatternMatch
-# from GlobalNewsCollector.Generalized import Metadata
+from GlobalNewsCollector import BaseCollector
+from GlobalNewsCollector.Generalized.LinkPatternMatch import getlinks
+from GlobalNewsCollector.Generalized.Metadata import get_metadata
 
 
-import os
-import sys
-sys.path.insert(1, os.path.join(sys.path[0], '..'))
-import BaseCollector
-from Generalized.LinkPatternMatch import getlinks
-from Generalized.Metadata import get_metadata
+# import os
+# import sys
+# sys.path.insert(1, os.path.join(sys.path[0], '..'))
+# import BaseCollector
+# from LinkPatternMatch import getlinks
+# from Metadata import get_metadata
 
 
 

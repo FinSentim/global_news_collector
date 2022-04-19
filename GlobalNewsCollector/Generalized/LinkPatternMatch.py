@@ -29,10 +29,10 @@ def getlinks(url: str) -> list:
 
     r = requests.get(url)
     soup = BeautifulSoup(r.content, 'html5lib')
-    matchCounter = 0
-    failCounter = 0
-    printMatches = False
-    validLinks = []
+    match_counter = 0
+    fail_counter = 0
+    print_matches = False
+    valid_links = []
     for l in soup.find_all('a', href=True):
         link = l['href']
         if (bool(re.match('^(/).+',link))): # Some valid links don't include main part of url
@@ -41,21 +41,21 @@ def getlinks(url: str) -> list:
         else:
             match = filter(link, source_name, likely_language="com")
         if (match):
-            validLinks.append(link)
-        if (printMatches):
+            valid_links.append(link)
+        if (print_matches):
             print(link)
             if (match):
                 print("Match")
                 print("\n")
-                matchCounter += 1
+                match_counter += 1
             else:
-                failCounter += 1
-    if (printMatches):
+                fail_counter += 1
+    if (print_matches):
         print("\n")
-        print("#Matches: " + str(matchCounter))
-        print('Fails: ' + str(failCounter))
+        print("#Matches: " + str(match_counter))
+        print('Fails: ' + str(fail_counter))
     
-    return validLinks
+    return valid_links
 
 
 def filter(url, source_name, likely_language) -> bool:
@@ -69,29 +69,29 @@ def filter(url, source_name, likely_language) -> bool:
         True if link is valid, False if link fails the filters
     """
     match = True
-    patternMatch = '^(http(s)*://).*('+source_name+').*' 
+    pattern_match = '^(http(s)*://).*('+source_name+').*' 
 
-    # Will update patternMatches, code currently only uses patternMatch
-    # patternMatches = ['^(http(s)*://).*('+source_name+').*', '.*(news).*']
+    # Will update pattern_matches, code currently only uses pattern_match
+    # pattern_matches = ['^(http(s)*://).*('+source_name+').*', '.*(news).*']
 
-    patternsIgnoreEn = ['^(http(s)*://www.facebook.com).*','^(http(s)*://(www.)*twitter.com).*', '.*(img).*', '.*(video).*', '.*(blog).*', '.*(copyright).*', '.*(help).*','.*(login).*','.*(signup).*','.*(contact).*','.*(about).*','.*(terms-conditions).*','.*(advertise).*','.*(careers).*']
-    patternsIgnoreGe = ['.*(datenschutzerklaerung).*','.*(werbung).*','.*(angebote).*','.*(nutzungsrechte).*','.*(nutzungshinweise).*','.*(nutzungsbedingungen).*']
-    patternsIgnore = []
+    patterns_ignore_en = ['^(http(s)*://www.facebook.com).*','^(http(s)*://(www.)*twitter.com).*', '.*(img).*', '.*(video).*', '.*(blog).*', '.*(copyright).*', '.*(help).*','.*(login).*','.*(signup).*','.*(contact).*','.*(about).*','.*(terms-conditions).*','.*(advertise).*','.*(careers).*']
+    patterns_ignore_ge = ['.*(datenschutzerklaerung).*','.*(werbung).*','.*(angebote).*','.*(nutzungsrechte).*','.*(nutzungshinweise).*','.*(nutzungsbedingungen).*']
+    patterns_ignore = []
     
     # Currently only supports german links, as majority links uses english, can be extended for other languages
     if (likely_language == "de"):
-        patternsIgnore = patternsIgnoreGe
+        patterns_ignore = patterns_ignore_ge
     
     
-    candidate = re.match(patternMatch,url.strip())
-    printSuccessfullyFiltered = False
+    candidate = re.match(pattern_match,url.strip())
+    print_successfully_filtered = False
     if (candidate != None and candidate.group(0).count('/') > 3):
         candidate = candidate.group(0)
-        for pIgnore in patternsIgnoreEn + patternsIgnore:
-            if (bool(re.match(pIgnore, candidate))):
+        for p_ignore in patterns_ignore_en + patterns_ignore:
+            if (bool(re.match(p_ignore, candidate))):
                 match = False
-                if (printSuccessfullyFiltered):
-                    print(candidate + " failed pattern " + pIgnore + "\n")
+                if (print_successfully_filtered):
+                    print(candidate + " failed pattern " + p_ignore + "\n")
     else:
         match = False
     return match
