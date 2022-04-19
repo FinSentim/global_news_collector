@@ -3,13 +3,13 @@ import re
 from bs4 import BeautifulSoup
 
 
-def getlinks(url):
+def getlinks(url) -> list:
     """
     Find links from frontpage of website that are likely to be articles.
     ---
     Args:
         url: The url of the article of the frontpage.
-    Returns: TBD
+    Returns: List of valid articles
     """
 
     # Add supported domain types
@@ -31,13 +31,17 @@ def getlinks(url):
     soup = BeautifulSoup(r.content, 'html5lib')
     matchCounter = 0
     failCounter = 0
-    printMatches = True
+    printMatches = False
+    validLinks = []
     for l in soup.find_all('a', href=True):
         link = l['href']
         if (bool(re.match('^(/).+',link))): # Some valid links don't include main part of url
-            match = filter(url+link, source_name, likely_language="com")
+            link = url+link
+            match = filter(link, source_name, likely_language="com")
         else:
             match = filter(link, source_name, likely_language="com")
+        if (match):
+            validLinks.append(link)
         if (printMatches):
             print(link)
             if (match):
@@ -50,6 +54,9 @@ def getlinks(url):
         print("\n")
         print("#Matches: " + str(matchCounter))
         print('Fails: ' + str(failCounter))
+    
+    return validLinks
+
 
 def filter(url, source_name, likely_language) -> bool:
     """
@@ -92,6 +99,6 @@ def filter(url, source_name, likely_language) -> bool:
   
 
 
-urls = ['http://www.people.com.cn/'] 
-for url in urls:  
-    getlinks(url)
+# urls = ['http://www.people.com.cn/'] 
+# for url in urls:  
+#     getlinks(url)
