@@ -2,41 +2,6 @@ import requests
 import re
 from bs4 import BeautifulSoup
 
-# Ignore links below
-# Chinese:
-# https://cn.chinadaily.com.cn/
-# https://www.caixin.com/
-# http://www.people.com.cn/
-# http://www.xinhuanet.com/
-# https://www.yicai.com/
-
-# German:
-# https://www.manager-magazin.de/
-
-# Website suggestions
-
-# Chinese:
-# https://cn.reuters.com/news/china
-# https://guangming.com.my/ - Does not work
-# https://cn.wsj.com/ - Wall Street Journal
-# https://finance.sina.com.cn/
-# https://www.chinanews.com.cn/finance/
-
-# Indian:
-# https://hindi.business-standard.com/
-# https://www.jagran.com/
-# https://www.bhaskar.com/
-# https://www.livehindustan.com/
-# https://www.amarujala.com/
-# https://www.financialexpress.com/hindi/
-
-# German:
-# https://www.handelsblatt.com/
-# https://www.dw.com/de/
-# https://www.bild.de/
-# https://www.finanzen.net/
-# https://www.faz.net/aktuell/
-# https://www.wiwo.de/
 
 def getlinks(url):
     """
