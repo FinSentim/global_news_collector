@@ -85,7 +85,7 @@ def filter(url, source_name, likely_language) -> bool:
     
     candidate = re.match(patternMatch,url.strip())
     printSuccessfullyFiltered = False
-    if (candidate != None):
+    if (candidate != None and candidate.group(0).count('/') > 3):
         candidate = candidate.group(0)
         for pIgnore in patternsIgnoreEn + patternsIgnore:
             if (bool(re.match(pIgnore, candidate))):

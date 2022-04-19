@@ -1,11 +1,11 @@
 from bs4 import BeautifulSoup
-import requests
+# import requests
 
-def get_metadata(url):
+def get_metadata(url: str, soup: BeautifulSoup) -> dict:
     #Default requests headers doesn't work on some sites, TODO find the headers that work best
     headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0'}
-    r = requests.get(url, headers = headers)
-    soup = BeautifulSoup(r.content, 'html.parser')
+    # r = requests.get(url, headers = headers)
+    # soup = BeautifulSoup(r.content, 'html.parser')
 
     title = None
     author = None
@@ -80,19 +80,10 @@ def get_metadata(url):
     return {
         "title": title,
         "author": author,
-        "description": description,
+        # "description": description,
         "date_published": date_published,
-        "date_modified": date_modified,
-        "language": language,
-        "content_type": content_type,
-        "url": meta_url
+        # "date_modified": date_modified,
+        # "language": language,
+        # "content_type": content_type,
+        # "url": meta_url
     }
-
-
-
-#print(get_metadata('https://finance.sina.com.cn/jjxw/2022-04-13/doc-imcwiwst1473460.shtml'))
-#print(get_metadata('https://www.amarujala.com/rajasthan/bjym-will-take-out-karauli-chalo-yatra-today-regarding-karauli-violence?src=tlh&position=1'))
-#print(get_metadata('https://www.livehindustan.com/national/story-here-is-why-farmers-prefer-selling-wheat-to-silos-of-adani-group-in-punjab-explained-6253174.html'))
-#print(get_metadata('https://cn.wsj.com/articles/%E4%B8%8A%E6%B5%B7%E5%8C%BA%E5%9F%9F%E6%9B%B4%E5%A4%9A%E5%B7%A5%E5%8E%82%E5%81%9C%E4%BA%A7-%E5%9B%A0%E9%98%B2%E7%96%AB%E5%B0%81%E6%8E%A7%E6%8E%AA%E6%96%BD%E5%86%B2%E5%87%BB%E4%BE%9B%E5%BA%94%E9%93%BE-11649819107'))
-#print(get_metadata('https://www.handelsblatt.com/finanzen/maerkte/devisen-rohstoffe/edelmetall-krisenindikator-oder-fehlsignal-wie-nachhaltig-ist-der-preisanstieg-beim-gold/28250444.html'))
-#print(get_metadata('https://www.dn.se/varlden/35-ar-gammal-artikel-avslojar-hur-boris-johnson-svangt-i-skulpturbraket/'))

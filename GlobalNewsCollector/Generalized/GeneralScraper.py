@@ -5,6 +5,7 @@ from lingua import LanguageDetectorBuilder
 from langdetect import detect 
 from datetime import datetime
 import requests
+import re
 # from GlobalNewsCollector.Generalized import LinkPatternMatch
 # from GlobalNewsCollector.Generalized import Metadata
 
@@ -14,7 +15,7 @@ import sys
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import BaseCollector
 from Generalized.LinkPatternMatch import getlinks
-import Generalized.Metadata
+from Generalized.Metadata import get_metadata
 
 
 
@@ -66,29 +67,58 @@ class GeneralScraper(BaseCollector.BaseCollector):
                 - Publisher
                 - Publisher url
         """
-        r = requests.get(url)
+        headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0'}
+        r = requests.get(url, headers = headers)
+        
         # fix encoding to handle different langauages
         r.encoding = r.apparent_encoding
+
         # Send response through readabilipy and get a parsable HTML tree
         tree = simple_tree_from_html_string(r.text)
 
         articleInfo = {}
+        articleInfo = self.__extract_metadata(url, r)
         articleInfo = self.__extract_body_title(tree)
         
+        # add language of article text
+        lang = self.detector.detect_language_of(articleInfo['body'])
+        articleInfo['language'] = str(lang).split(".")[1]
+
         articleInfo = self.__compare_article(articleInfo, r)
 
         #   Check if body probably is article and of a valid language
-        if self.__validate_article_body(articleInfo['body']) != True or articleInfo == {}:
+        if self.__validate_article_body(articleInfo['body']) != True:
             return {}
 
 
         # Detect language, interperet lang as a string and extract language part
-        lang = self.detector.detect_language_of(articleInfo['body'])
-        articleInfo['Language'] = str(lang).split(".")[1]
+        
         articleInfo['url'] = url
         articleInfo['date_retrieved'] = datetime.utcnow().strftime("%d-%m-%Y %H:%M")
+        
+        return articleInfo
+
+    def __extract_metadata(self, url: str, r: requests.Response):
+        soup = BeautifulSoup(r.content, 'html.parser')
+        articleInfo = get_metadata(url, soup)
+
+        # Cange all none elements in dict to just be empty strings
+        for k,v in articleInfo.items():
+            if v is None:
+                articleInfo[k] = ""
+
+        # add url and date retrived
+        articleInfo['url'] = url
+        articleInfo['date_retrieved'] = datetime.utcnow().strftime("%d-%m-%Y %H:%M")
+        
+        # Check to ensure normal characters
+        if self.__check_characters_in_string(articleInfo['author']):
+            articleInfo['author'] = ""
         return articleInfo
         
+    def __check_characters_in_string(self, s: str)->bool:
+        return bool(re.match('.*\d+.*',s)) or bool(re.match('.*\W+.*',s))         
+
     def __compare_article(self, articleInfo: dict, resp: requests.Response) -> dict:
         """
         Metod compares the scraped information from cleaned html tree with information returned from readabilipy library
@@ -103,12 +133,12 @@ class GeneralScraper(BaseCollector.BaseCollector):
         try:
             d = simple_json_from_html_string(resp.text, use_readability=True)
             text = ""
-    
             for line in d['plain_text']:
                 text = text + line['text']
             if len(text) > len(articleInfo['body']):
                 articleInfo['body'] = text
-            articleInfo['author'] = d['byline']
+            if articleInfo['author'] == "" and not(self.__check_characters_in_string(d['byline'])):
+                articleInfo['author'] = d['byline']
             # # Print test inorder to see difference
             # print(d['title'])
             # print(text)
@@ -118,7 +148,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
             # print(articleInfo['body'])
             return articleInfo
         except Exception:
-            return {}
+            return articleInfo
         
 
 
@@ -171,7 +201,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
             # Create dictionary that contains body and title 
             return {'body':body, 'title':title}
         except AttributeError:
-            return {}
+            return {'body':body, 'title':title}
 
         
 
