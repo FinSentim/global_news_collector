@@ -1,12 +1,11 @@
 import requests 
 import re
 from bs4 import BeautifulSoup
-from readability import Document
 
 # Ignore links below
 # Chinese:
 # https://cn.chinadaily.com.cn/
-# https://www.caixin.com/?HOLDZH
+# https://www.caixin.com/
 # http://www.people.com.cn/
 # http://www.xinhuanet.com/
 # https://www.yicai.com/
@@ -18,8 +17,8 @@ from readability import Document
 
 # Chinese:
 # https://cn.reuters.com/news/china
-# https://guangming.com.my/
-# https://cn.wsj.com/
+# https://guangming.com.my/ - Does not work
+# https://cn.wsj.com/ - Wall Street Journal
 # https://finance.sina.com.cn/
 # https://www.chinanews.com.cn/finance/
 
@@ -47,7 +46,11 @@ def getlinks(url):
         url: The url of the article of the frontpage.
     Returns: TBD
     """
-    domain_types = ["com", "cn", "de", "net", "uk"] # To be updated
+
+    # Add supported domain types
+    domain_types = ["com", "cn", "de", "net", "uk"] 
+
+    # Find likely language by identifying domain type, and get source name
     elements_in_url = url.split('.')
     for i in range(len(elements_in_url)):
         if elements_in_url[i] == "/":
@@ -63,24 +66,27 @@ def getlinks(url):
     soup = BeautifulSoup(r.content, 'html5lib')
     matchCounter = 0
     failCounter = 0
+    printMatches = True
     for l in soup.find_all('a', href=True):
         link = l['href']
-        if (bool(re.match('^(/).+',link))): # Some valid links don't include main url
-            match = filter(url+link, source_name)
+        if (bool(re.match('^(/).+',link))): # Some valid links don't include main part of url
+            match = filter(url+link, source_name, likely_language="com")
         else:
-            match = filter(link, source_name)
-        print(link)
-        if (match):
-            print("Match")
-            print("\n")
-            matchCounter += 1
-        else:
-            failCounter += 1
-    print("\n")
-    print("#Matches: " + str(matchCounter))
-    print('Fails: ' + str(failCounter))
+            match = filter(link, source_name, likely_language="com")
+        if (printMatches):
+            print(link)
+            if (match):
+                print("Match")
+                print("\n")
+                matchCounter += 1
+            else:
+                failCounter += 1
+    if (printMatches):
+        print("\n")
+        print("#Matches: " + str(matchCounter))
+        print('Fails: ' + str(failCounter))
 
-def filter(url, source_name) -> bool:
+def filter(url, source_name, likely_language) -> bool:
     """
     Filter determining if a link is a likely article 
     ---
@@ -97,14 +103,23 @@ def filter(url, source_name) -> bool:
     # patternMatches = ['^(http(s)*://).*('+source_name+').*', '.*(news).*']
 
     patternsIgnoreEn = ['^(http(s)*://www.facebook.com).*','^(http(s)*://(www.)*twitter.com).*', '.*(img).*', '.*(video).*', '.*(blog).*', '.*(copyright).*', '.*(help).*','.*(login).*','.*(signup).*','.*(contact).*','.*(about).*','.*(terms-conditions).*','.*(advertise).*','.*(careers).*']
-    patternsIgnoreGe = ['.*(datenschutzerklaerung).*','.*(werbung).*','.*(angebote).*','.*(nutzungsrechte).*']
+    patternsIgnoreGe = ['.*(datenschutzerklaerung).*','.*(werbung).*','.*(angebote).*','.*(nutzungsrechte).*','.*(nutzungshinweise).*','.*(nutzungsbedingungen).*']
+    patternsIgnore = []
+    
+    # Currently only supports german links, as majority links uses english, can be extended for other languages
+    if (likely_language == "de"):
+        patternsIgnore = patternsIgnoreGe
+    
+    
     candidate = re.match(patternMatch,url.strip())
+    printSuccessfullyFiltered = False
     if (candidate != None):
         candidate = candidate.group(0)
-        for pIgnore in patternsIgnoreEn + patternsIgnoreGe:
+        for pIgnore in patternsIgnoreEn + patternsIgnore:
             if (bool(re.match(pIgnore, candidate))):
                 match = False
-                # print(candidate + " failed pattern " + pIgnore + "\n")
+                if (printSuccessfullyFiltered):
+                    print(candidate + " failed pattern " + pIgnore + "\n")
     else:
         match = False
     return match
@@ -112,6 +127,6 @@ def filter(url, source_name) -> bool:
   
 
 
-urls = ['https://www.handelsblatt.com/'] 
+urls = ['http://www.people.com.cn/'] 
 for url in urls:  
     getlinks(url)
