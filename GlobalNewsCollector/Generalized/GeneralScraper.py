@@ -1,9 +1,6 @@
-from nntplib import ArticleInfo
-from turtle import title
 from bs4 import BeautifulSoup
 from readabilipy import simple_tree_from_html_string, simple_json_from_html_string
 from lingua import LanguageDetectorBuilder
-from langdetect import detect 
 from datetime import datetime
 import requests
 import re
@@ -45,8 +42,8 @@ class GeneralScraper(BaseCollector.BaseCollector):
             dictionary = self.get_article(link)
             if dictionary != {}:
                 articles.append(dictionary)
-                print(dictionary)
-                print("\n")
+                # print(dictionary)
+                print("Author: " + dictionary['author'])
         # print(valid_links)
         return articles
         
@@ -68,12 +65,17 @@ class GeneralScraper(BaseCollector.BaseCollector):
                 - Publisher
                 - Publisher url
         """
-        headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0'}
-        r = requests.get(url, headers = headers)
-        
-        # fix encoding to handle different langauages
-        r.encoding = r.apparent_encoding
+        try:
+            headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0'}
+            r = requests.get(url, headers = headers, timeout=5)    
+            # fix encoding to handle different langauages
+            r.encoding = r.apparent_encoding
 
+            # if timeout kicked in, the respones will be none and then the function call should end
+            if r == None:
+                return {}
+        except Exception:
+            return {}
         # Send response through readabilipy and get a parsable HTML tree
         tree = simple_tree_from_html_string(r.text)
 
@@ -97,7 +99,6 @@ class GeneralScraper(BaseCollector.BaseCollector):
         
         articleInfo['url'] = url
         articleInfo['date_retrieved'] = datetime.utcnow().strftime("%d-%m-%Y %H:%M")
-        print("författare: "+articleInfo['author'])
         
         return articleInfo
 
@@ -169,7 +170,6 @@ class GeneralScraper(BaseCollector.BaseCollector):
 
 
     def __validate_article_body(self, body: str) -> bool:
-
         """
         Method checks validity of article.
         Args: \n
@@ -177,8 +177,8 @@ class GeneralScraper(BaseCollector.BaseCollector):
         Returns: \n
             A bool returning whether or not the article is sensible. Checking both length and language. 
             Accepted languages: GERMAN, HINDI, CHINESE 
-        
         """
+
         validity = False
 
         # Ensure body is long enough
@@ -234,9 +234,15 @@ gs = GeneralScraper()
 # a = gs.get_article('https://www.manager-magazin.de/finanzen/bundesbank-praesident-joachim-nagel-glaubt-an-baldigen-zinsanstieg-a-58d5345b-db65-4262-ad46-4e447eb955a2')
 # a = gs.get_article('https://www.theguardian.com/world/2022/apr/18/macron-lead-over-le-pen-stabilises-as-election-scrutiny-intensifies')
 # a = gs.get_article('http://paper.people.com.cn/rmrb/index.html')
-a = gs.get_article('http://politics.people.com.cn/n1/2022/0419/c1024-32403180.html')
-# print(gs.get_articles_list('http://www.people.com.cn/'))
-print(a)
+# a = gs.get_article('http://politics.people.com.cn/n1/2022/0419/c1024-32403180.html')
+# a = gs.get_article('http://politics.people.com.cn/n1/2022/0419/c1024-32403035.html')
+a=gs.get_articles_list('http://www.people.com.cn/')
+print(gs.get_articles_list('http://www.people.com.cn/'))
+c = 0
+for i in a:
+    c = c + 1
+print("# of scraped articles: " + str(c))
+# print(a)
 # http://www.people.com.cn/
 # for key in a.values():
 #     print(key)
