@@ -1,3 +1,4 @@
+from nntplib import ArticleInfo
 from bs4 import BeautifulSoup
 from readabilipy import simple_tree_from_html_string, simple_json_from_html_string
 from lingua import LanguageDetectorBuilder
@@ -37,11 +38,14 @@ class GeneralScraper(BaseCollector.BaseCollector):
         valid_links  = getlinks(url)
         articles = []
         for link in valid_links:
+            print(link)
+
             dictionary = self.get_article(link)
-            
             if dictionary != {}:
                 articles.append(dictionary)
-        
+                print(dictionary)
+                print("\n")
+        # print(valid_links)
         return articles
         
 
@@ -74,8 +78,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
         articleInfo = self.__compare_article(articleInfo, r)
 
         #   Check if body probably is article and of a valid language
-        print(self.__validate_article_body(articleInfo['body']))
-        if self.__validate_article_body(articleInfo['body']) != True:
+        if self.__validate_article_body(articleInfo['body']) != True or articleInfo == {}:
             return {}
 
 
@@ -96,22 +99,27 @@ class GeneralScraper(BaseCollector.BaseCollector):
         Returns: \n
             An update dictionary that has compared scraped information from clean HTML tree with what readabilipy was able to scrap it self 
         """
-        d = simple_json_from_html_string(resp.text, use_readability=True)
-        text = ""
-
-        for line in d['plain_text']:
-            text = text + line['text']
-        if len(text) > len(articleInfo['body']):
-            articleInfo['body'] = text
-        articleInfo['author'] = d['byline']
-        # # Print test inorder to see difference
-        # print(d['title'])
-        # print(text)
-        # print(d['byline'])
-        # print("---------------BODY-------------------")
-        # print(articleInfo['title'])
-        # print(articleInfo['body'])
-        return articleInfo
+        
+        try:
+            d = simple_json_from_html_string(resp.text, use_readability=True)
+            text = ""
+    
+            for line in d['plain_text']:
+                text = text + line['text']
+            if len(text) > len(articleInfo['body']):
+                articleInfo['body'] = text
+            articleInfo['author'] = d['byline']
+            # # Print test inorder to see difference
+            # print(d['title'])
+            # print(text)
+            # print(d['byline'])
+            # print("---------------BODY-------------------")
+            # print(articleInfo['title'])
+            # print(articleInfo['body'])
+            return articleInfo
+        except Exception:
+            return {}
+        
 
 
     def __validate_article_body(self, body: str) -> bool:
@@ -128,7 +136,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
         validity = False
 
         # Ensure body is long enough
-        print("body length: " + str(len(body)))
+        # print("body length: " + str(len(body)))
         if len(body) <= 100:
             return validity
 
@@ -172,11 +180,12 @@ class GeneralScraper(BaseCollector.BaseCollector):
 
 gs = GeneralScraper()
 # a = gs.get_article('https://hindi.business-standard.com/storypage.php?autono=186301')
-a = gs.get_article('http://world.people.com.cn/n1/2022/0404/c1002-32391390.html')
+# a = gs.get_article('http://world.people.com.cn/n1/2022/0404/c1002-32391390.html')
 # a = gs.get_article('http://finance.people.com.cn/n1/2022/0414/c1004-32398913.html')
 # a = gs.get_article('https://www.manager-magazin.de/finanzen/bundesbank-praesident-joachim-nagel-glaubt-an-baldigen-zinsanstieg-a-58d5345b-db65-4262-ad46-4e447eb955a2')
 # a = gs.get_article('https://www.theguardian.com/world/2022/apr/18/macron-lead-over-le-pen-stabilises-as-election-scrutiny-intensifies')
-# print(a)
+print(gs.get_articles_list('http://www.people.com.cn/'))
+# print(a)http://www.people.com.cn/
 # for key in a.values():
 #     print(key)
 #     print(" ")
