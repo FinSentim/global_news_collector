@@ -3,7 +3,7 @@ import re
 from bs4 import BeautifulSoup
 
 
-def getlinks(url) -> list:
+def getlinks(url: str) -> list:
     """
     Find links from frontpage of website that are likely to be articles.
     ---

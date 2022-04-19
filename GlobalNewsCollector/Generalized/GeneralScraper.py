@@ -1,20 +1,21 @@
 from bs4 import BeautifulSoup
 from readabilipy import simple_tree_from_html_string, simple_json_from_html_string
-from lingua import LanguageDetectorBuilder, Language
-import langid
+from lingua import LanguageDetectorBuilder
 from langdetect import detect 
 from datetime import datetime
 import requests
+# from GlobalNewsCollector.Generalized import LinkPatternMatch
+# from GlobalNewsCollector.Generalized import Metadata
 
 
 import os
 import sys
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import BaseCollector
+from Generalized.LinkPatternMatch import getlinks
+import Generalized.Metadata
 
-# from GlobalNewsCollector import BaseCollector
 
-# Language detection import
 
 
 class GeneralScraper(BaseCollector.BaseCollector):
@@ -22,10 +23,29 @@ class GeneralScraper(BaseCollector.BaseCollector):
     def __init__(self) -> None:
         super().__init__()
         # instantiate the language detector, and decide on what languages it should be able to detect
-        # self.languages = [Language.ENGLISH, Language.HINDI, Language.GERMAN, Language.CHINESE, Language.SWEDISH]
-
-        self.acceptedLanguages = ['HINDI', 'GERMAN', 'CHINESE',]
+        self.accepted_languages = ['HINDI', 'GERMAN', 'CHINESE']
         self.detector = LanguageDetectorBuilder.from_all_languages().build()
+
+    def get_articles_list(self, url: str) -> list:
+        """
+        Scrap all articles visible in the "Latest news view".
+        ---
+        Args:
+            url: The url of the website.
+        Returns: A list containing a dictionary returned from get_article() for each article.
+        """
+        valid_links  = getlinks(url)
+        articles = []
+        for link in valid_links:
+            dictionary = self.get_article(link)
+            
+            if dictionary != {}:
+                articles.append(dictionary)
+        
+        return articles
+        
+
+        
 
     def get_article(self, url: str) -> dict:
         """
@@ -49,13 +69,13 @@ class GeneralScraper(BaseCollector.BaseCollector):
         tree = simple_tree_from_html_string(r.text)
 
         articleInfo = {}
-        articleInfo = self.__extractBodyTitle(tree)
+        articleInfo = self.__extract_body_title(tree)
         
-        articleInfo = self.__compareArticle(articleInfo, r)
+        articleInfo = self.__compare_article(articleInfo, r)
 
         #   Check if body probably is article and of a valid language
-        print(self.__validateArticleBody(articleInfo['body']))
-        if self.__validateArticleBody(articleInfo['body']) != True:
+        print(self.__validate_article_body(articleInfo['body']))
+        if self.__validate_article_body(articleInfo['body']) != True:
             return {}
 
 
@@ -66,7 +86,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
         articleInfo['date_retrieved'] = datetime.utcnow().strftime("%d-%m-%Y %H:%M")
         return articleInfo
         
-    def __compareArticle(self, articleInfo: dict, resp: requests.Response) -> dict:
+    def __compare_article(self, articleInfo: dict, resp: requests.Response) -> dict:
         """
         Metod compares the scraped information from cleaned html tree with information returned from readabilipy library
         ---
@@ -94,7 +114,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
         return articleInfo
 
 
-    def __validateArticleBody(self, body: str) -> bool:
+    def __validate_article_body(self, body: str) -> bool:
 
         """
         Method checks validity of article.
@@ -114,11 +134,11 @@ class GeneralScraper(BaseCollector.BaseCollector):
 
         lang = self.detector.detect_language_of(body)
         # Extract the specific language name and check whether is is an accepted language or not
-        if (str(lang).split('.')[1] in self.acceptedLanguages):
+        if (str(lang).split('.')[1] in self.accepted_languages):
             validity = True
         return validity
 
-    def __extractBodyTitle(self, tree) -> dict:
+    def __extract_body_title(self, tree) -> dict:
         """
         Method parses a html-tree for relevant infomration gatherd from the readabilipy library.
         ---
