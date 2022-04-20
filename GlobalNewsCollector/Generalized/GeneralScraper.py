@@ -77,28 +77,28 @@ class GeneralScraper(BaseCollector.BaseCollector):
         # Send response through readabilipy and get a parsable HTML tree
         tree = simple_tree_from_html_string(r.text)
 
-        articleInfo = {}
-        articleInfo = self.__extract_metadata(url, r)
-        articleInfo = self.__extract_body_title(tree, articleInfo)
+        article_info = {}
+        article_info = self.__extract_metadata(url, r)
+        article_info = self.__extract_body_title(tree, article_info)
         
         # add language of article text,
         
-        lang = self.detector.detect_language_of(articleInfo['body'])
-        articleInfo['language'] = str(lang).split(".")[1] if lang != None else ""
+        lang = self.detector.detect_language_of(article_info['body'])
+        article_info['language'] = str(lang).split(".")[1] if lang != None else ""
 
-        articleInfo = self.__compare_article(articleInfo, r)
+        article_info = self.__compare_article(article_info, r)
 
         #   Check if body probably is article and of a valid language
-        if self.__validate_article_body(articleInfo['body']) != True:
+        if self.__validate_article_body(article_info['body']) != True:
             return {}
 
 
         # Detect language, interperet lang as a string and extract language part
         
-        articleInfo['url'] = url
-        articleInfo['date_retrieved'] = datetime.utcnow().strftime("%d-%m-%Y %H:%M")
+        article_info['url'] = url
+        article_info['date_retrieved'] = datetime.utcnow().strftime("%d-%m-%Y %H:%M")
         
-        return articleInfo
+        return article_info
 
     def __extract_metadata(self, url: str, r: requests.Response) -> dict:
         """
@@ -115,21 +115,21 @@ class GeneralScraper(BaseCollector.BaseCollector):
         """
 
         soup = BeautifulSoup(r.content, 'html.parser')
-        articleInfo = get_metadata(url, soup)
+        article_info = get_metadata(url, soup)
 
         # Cange all none elements in dict to just be empty strings
-        for k,v in articleInfo.items():
+        for k,v in article_info.items():
             if v is None:
-                articleInfo[k] = ""
+                article_info[k] = ""
 
         # add url and date retrived
-        articleInfo['url'] = url
-        articleInfo['date_retrieved'] = datetime.utcnow().strftime("%d-%m-%Y %H:%M")
+        article_info['url'] = url
+        article_info['date_retrieved'] = datetime.utcnow().strftime("%d-%m-%Y %H:%M")
         
         # Check to ensure normal characters
-        if self.__check_characters_in_string(articleInfo['author']):
-            articleInfo['author'] = ""
-        return articleInfo
+        if self.__check_characters_in_string(article_info['author']):
+            article_info['author'] = ""
+        return article_info
         
     def __check_characters_in_string(self, s: str)->bool:
         """
@@ -137,12 +137,12 @@ class GeneralScraper(BaseCollector.BaseCollector):
         """
         return bool(re.match('.*\d+.*',s)) or bool(re.match('.*\W+.*',s))         
 
-    def __compare_article(self, articleInfo: dict, resp: requests.Response) -> dict:
+    def __compare_article(self, article_info: dict, resp: requests.Response) -> dict:
         """
         Metod compares the scraped information from cleaned html tree with information returned from readabilipy library
         ---
         Args: \n
-            articleInfo: Dictionary containging the scraped info from the clean HTML tree
+            article_info: Dictionary containging the scraped info from the clean HTML tree
             resp: response from http request
         Returns: \n
             An update dictionary that has compared scraped information from clean HTML tree with what readabilipy was able to scrap it self 
@@ -153,20 +153,20 @@ class GeneralScraper(BaseCollector.BaseCollector):
             text = ""
             for line in d['plain_text']:
                 text = text + line['text']
-            if len(text) > len(articleInfo['body']):
-                articleInfo['body'] = text
-            if articleInfo['author'] == "" and not(self.__check_characters_in_string(d['byline'])):
-                articleInfo['author'] = d['byline']
+            if len(text) > len(article_info['body']):
+                article_info['body'] = text
+            if article_info['author'] == "" and not(self.__check_characters_in_string(d['byline'])):
+                article_info['author'] = d['byline']
             # # Print test inorder to see difference
             # print(d['title'])
             # print(text)
             # print(d['byline'])
             # print("---------------BODY-------------------")
-            # print(articleInfo['title'])
-            # print(articleInfo['body'])
-            return articleInfo
+            # print(article_info['title'])
+            # print(article_info['body'])
+            return article_info
         except Exception:
-            return articleInfo
+            return article_info
         
 
 
@@ -193,7 +193,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
             validity = True
         return validity
 
-    def __extract_body_title(self, tree, articleInfo: dict) -> dict:
+    def __extract_body_title(self, tree, article_info: dict) -> dict:
         """
         Method parses a html-tree for relevant infomration gatherd from the readabilipy library.
         ---
@@ -214,11 +214,11 @@ class GeneralScraper(BaseCollector.BaseCollector):
             # Get the article body
             for row in tree.findAll('p'):
                 body = body + row.text
-            articleInfo['body'] = body
-            if articleInfo['title'] == "":
-                articleInfo['title'] = title
+            article_info['body'] = body
+            if article_info['title'] == "":
+                article_info['title'] = title
             # Create dictionary that contains body and title 
-            return articleInfo
+            return article_info
         except AttributeError:
-            articleInfo['body'] = body
-            return articleInfo
+            article_info['body'] = body
+            return article_info
