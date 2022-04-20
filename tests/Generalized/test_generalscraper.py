@@ -15,10 +15,10 @@ class TestGeneralScraper(unittest.TestCase):
                 self.assertFalse(n_a in author)
             
     def test_get_article_body(self):
-        tot_lenght = 0
+        tot_length = 0
         for dictionary in self.dictionaries:
-            tot_lenght = tot_lenght + len(dictionary['body'])
-        avg_length = tot_lenght / len(self.dictionaries)
+            tot_length = tot_length + len(dictionary['body'])
+        avg_length = tot_length / len(self.dictionaries)
         self.assertGreater(avg_length,20)
 
     def test_getlinks(self):
