@@ -4,16 +4,16 @@ from lingua import LanguageDetectorBuilder
 from datetime import datetime
 import requests
 import re
-# from GlobalNewsCollector.Generalized import LinkPatternMatch
-# from GlobalNewsCollector.Generalized import Metadata
+from GlobalNewsCollector.Generalized import LinkPatternMatch
+from GlobalNewsCollector.Generalized import Metadata
 
 
-import os
-import sys
-sys.path.insert(1, os.path.join(sys.path[0], '..'))
-import BaseCollector
-from Generalized.LinkPatternMatch import getlinks
-from Generalized.Metadata import get_metadata
+# import os
+# import sys
+# sys.path.insert(1, os.path.join(sys.path[0], '..'))
+# import BaseCollector
+# from Generalized.LinkPatternMatch import getlinks
+# from Generalized.Metadata import get_metadata
 
 
 
@@ -40,14 +40,9 @@ class GeneralScraper(BaseCollector.BaseCollector):
         valid_links  = getlinks(url)
         articles = []
         for link in valid_links:
-            print(link)
-
             dictionary = self.get_article(link)
             if dictionary != {}:
                 articles.append(dictionary)
-                # print(dictionary)
-                print("Author: " + dictionary['author'])
-        # print(valid_links)
         return articles
         
 
@@ -227,32 +222,3 @@ class GeneralScraper(BaseCollector.BaseCollector):
         except AttributeError:
             articleInfo['body'] = body
             return articleInfo
-
-        
-
-    
-
-
-# gs = GeneralScraper()
-# # a = gs.get_article('https://hindi.business-standard.com/storypage.php?autono=186301')
-# # a = gs.get_article('http://world.people.com.cn/n1/2022/0404/c1002-32391390.html')
-# # a = gs.get_article('http://finance.people.com.cn/n1/2022/0414/c1004-32398913.html')
-# # a = gs.get_article('https://www.manager-magazin.de/finanzen/bundesbank-praesident-joachim-nagel-glaubt-an-baldigen-zinsanstieg-a-58d5345b-db65-4262-ad46-4e447eb955a2')
-# # a = gs.get_article('https://www.theguardian.com/world/2022/apr/18/macron-lead-over-le-pen-stabilises-as-election-scrutiny-intensifies')
-# # a = gs.get_article('http://paper.people.com.cn/rmrb/index.html')
-# # a = gs.get_article('http://politics.people.com.cn/n1/2022/0419/c1024-32403180.html')
-# # a = gs.get_article('http://politics.people.com.cn/n1/2022/0419/c1024-32403035.html')
-# a=gs.get_articles_list('http://www.people.com.cn/')
-# print(gs.get_articles_list('http://www.people.com.cn/'))
-# c = 0
-# for i in a:
-#     c = c + 1
-# print("# of scraped articles: " + str(c))
-# # print(a)
-# # http://www.people.com.cn/
-# # for key in a.values():
-# #     print(key)
-# #     print(" ")
-
-
-    
