@@ -4,6 +4,7 @@ from lingua import LanguageDetectorBuilder
 from datetime import datetime
 import requests
 import re
+from GlobalNewsCollector import BaseCollector
 from GlobalNewsCollector.Generalized.LinkPatternMatch import getlinks
 from GlobalNewsCollector.Generalized.Metadata import get_metadata
 
@@ -65,7 +66,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
         """
         try:
             headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0'}
-            r = requests.get(url, headers = headers, timeout=5)    
+            r = requests.get(url, headers = headers, timeout=2)    
             # fix encoding to handle different langauages
             r.encoding = r.apparent_encoding
 
@@ -97,7 +98,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
         
         articleInfo['url'] = url
         articleInfo['date_retrieved'] = datetime.utcnow().strftime("%d-%m-%Y %H:%M")
-        
+
         return articleInfo
 
     def __extract_metadata(self, url: str, r: requests.Response) -> dict:

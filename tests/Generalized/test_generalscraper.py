@@ -9,12 +9,14 @@ class TestGeneralScraper(unittest.TestCase):
     non_alphabetical = ['_','0','1','2','3','4','5','6','7','8','9']
 
     def test_get_article_author(self):
+        print("Run test test_get_article_author")
         for d in self.dictionaries:
             author = d['author']
             for n_a in self.non_alphabetical:
                 self.assertFalse(n_a in author)
             
     def test_get_article_body(self):
+        print("Run test test_get_article_body")
         tot_lenght = 0
         for dictionary in self.dictionaries:
             tot_lenght = tot_lenght + len(dictionary['body'])
@@ -22,6 +24,7 @@ class TestGeneralScraper(unittest.TestCase):
         self.assertGreater(avg_length,20)
 
     def test_getlinks(self):
+        print("Run test test_getlinks")
         known_good_url = "http://www.people.com.cn/"
         valid_articles = getlinks(known_good_url)
         self.assertGreater(len(valid_articles),0)
