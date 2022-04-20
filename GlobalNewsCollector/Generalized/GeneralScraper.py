@@ -4,16 +4,9 @@ from lingua import LanguageDetectorBuilder
 from datetime import datetime
 import requests
 import re
-import GlobalNewsCollector
 from GlobalNewsCollector.Generalized.LinkPatternMatch import getlinks
 from GlobalNewsCollector.Generalized.Metadata import get_metadata
 from GlobalNewsCollector import BaseCollector
-# import os
-# import sys
-# sys.path.insert(1, os.path.join(sys.path[0], '..'))
-# import BaseCollector
-# from Generalized.LinkPatternMatch import getlinks
-# from Generalized.Metadata import get_metadata
 
 class GeneralScraper(BaseCollector.BaseCollector):
 
