@@ -43,12 +43,12 @@ class TestGeneralScraper(unittest.TestCase):
 
     def test_datetime_format(self):
         expected_publication_date_format = '(\d{4}.\d{2}.\d{2})|(\d{2}.\d{2}.\d{4})'
-        expected_retrieved_date_format = '\d{2}(-)\d{2}(-)\d{4}(\s)\d{2}(:)\d{2})'
+        expected_retrieved_date_format = '\d{2}(-)\d{2}(-)\d{4}(\s)\d{2}(:)\d{2}'
         for d in self.dictionaries:
             publication_date = d['date_published']
-            retrieved_date = d['date_retrieved']
-            self.assertTrue(bool(re.match(publication_date, expected_publication_date_format)))
-            self.assertTrue(bool(re.match(retrieved_date, expected_retrieved_date_format)))
+            retrieved_date = str(d['date_retrieved'])
+            self.assertTrue(bool(re.match(expected_publication_date_format, publication_date)))
+            self.assertTrue(bool(re.match(expected_retrieved_date_format, retrieved_date)))
 
 
     def test_getlinks(self):
