@@ -80,7 +80,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
         article_info = self.__compare_article(article_info, r)
 
         #   Check if body probably is article and of a valid language
-        if self.__validate_article_body(article_info['body']) != True:
+        if self.__validate_article_body(article_info['body'], article_info['title']) != True:
             return {}
 
 
@@ -180,7 +180,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
         except Exception:
             return article_info
         
-    def __validate_article_body(self, body: str) -> bool:
+    def __validate_article_body(self, body: str, title: str) -> bool:
         """
         Method checks validity of article.
         Args: \n
@@ -192,9 +192,11 @@ class GeneralScraper(BaseCollector.BaseCollector):
 
         validity = False
 
-        # Ensure body is long enough
+        # Ensure body and title is long enough
         # print("body length: " + str(len(body)))
         if len(body) <= 100:
+            return validity
+        if len(title) <1:
             return validity
 
         lang = self.detector.detect_language_of(body)
