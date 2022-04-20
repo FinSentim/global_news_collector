@@ -28,12 +28,23 @@ class GeneralScraper(BaseCollector.BaseCollector):
             url: The url of the website.
         Returns: A list containing a dictionary returned from get_article() for each article.
         """
+        limit_articles = True
+        counter = 0
         valid_links  = getlinks(url)
         articles = []
-        for link in valid_links:
-            dictionary = self.get_article(link)
-            if dictionary != {}:
-                articles.append(dictionary)
+        if limit_articles:
+            for link in valid_links:
+                dictionary = self.get_article(link)
+                if dictionary != {}:
+                    articles.append(dictionary)
+                    counter = counter + 1
+                if counter > 25:
+                    break
+        else:
+            for link in valid_links:
+                dictionary = self.get_article(link)
+                if dictionary != {}:
+                    articles.append(dictionary)
         return articles
         
     def get_article(self, url: str) -> dict:
@@ -192,7 +203,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
         # print("body length: " + str(len(body)))
         if len(body) <= 100:
             return validity
-        if len(title) <1:
+        if len(title) <3:
             return validity
 
         lang = self.detector.detect_language_of(body)
