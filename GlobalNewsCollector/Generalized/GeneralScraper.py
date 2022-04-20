@@ -30,11 +30,9 @@ class GeneralScraper(BaseCollector.BaseCollector):
         valid_links  = getlinks(url)
         articles = []
         for link in valid_links:
-            print(link)
             dictionary = self.get_article(link)
             if dictionary != {}:
                 articles.append(dictionary)
-                print(dictionary)
         return articles
         
     def get_article(self, url: str) -> dict:
