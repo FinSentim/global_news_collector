@@ -45,9 +45,6 @@ class GeneralScraper(BaseCollector.BaseCollector):
                 articles.append(dictionary)
         return articles
         
-
-        
-
     def get_article(self, url: str) -> dict:
         """
         Scrap information from the article that is accessed with parameter url.
@@ -168,8 +165,6 @@ class GeneralScraper(BaseCollector.BaseCollector):
         except Exception:
             return article_info
         
-
-
     def __validate_article_body(self, body: str) -> bool:
         """
         Method checks validity of article.
