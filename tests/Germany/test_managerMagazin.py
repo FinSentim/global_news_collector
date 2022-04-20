@@ -6,10 +6,8 @@ class TestScrapper(unittest.TestCase):
 
     def test_get_articles_list(self):
         
-        print("Test 1")
         url = "https://www.manager-magazin.de/"
         list = managerMagazin.get_articles_list(managerMagazin,url)
-        print(list)
         self.assertFalse(list == None)
         for article in list:
             self.assertTrue(len(article) > 0)
@@ -19,14 +17,10 @@ class TestScrapper(unittest.TestCase):
 
     def test_get_article(self):
         
-        print("Test 2")
         urlList = managerMagazin.get_articles_list(managerMagazin,"https://www.manager-magazin.de/")
-        print(urlList)
         url = urlList[0]["url"]
         e = urlList[0]
-        print(e)
         url = e['url']
-        print(url)
         article = managerMagazin.get_article(managerMagazin,url)
         
         self.assertTrue(len(article) == 8) #Checking that dictionary article contains 8 components. 
