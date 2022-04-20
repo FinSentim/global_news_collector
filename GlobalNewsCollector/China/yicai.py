@@ -49,7 +49,10 @@ class Yicai(BaseCollector):
         title = article_info.h1.text
 
         # Some articles only have a "Responsible editor", some have "Author", and some have both. Both currently included. 
-        author = article_info.find('p', attrs={'class':'names'}).text.replace('\xa0',' ')
+        try:
+            author = article_info.find('p', attrs={'class':'names'}).text.replace('\xa0',' ')
+        except:
+            author = ""
         date = article_info.em.text # time in UTC+8, probably
 
         # text body currently doesn't filter away links and the like but can easily be modified for desired output format:
