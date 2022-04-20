@@ -50,6 +50,7 @@ class TestGeneralScraper(unittest.TestCase):
             self.assertTrue(bool(re.match(publication_date, expected_publication_date_format)))
             self.assertTrue(bool(re.match(retrieved_date, expected_retrieved_date_format)))
 
+
     def test_getlinks(self):
         print("Run test test_getlinks")
         known_good_url = "http://www.people.com.cn/"

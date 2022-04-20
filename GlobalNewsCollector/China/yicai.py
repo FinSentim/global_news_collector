@@ -9,13 +9,28 @@ from GlobalNewsCollector.BaseCollector import BaseCollector
 class Yicai(BaseCollector):
 
     def get_articles_list(self, url: str) -> list:
-
+        """
+        Scrapes information from an article from the website yicai.com accessed with the url parameter
+        ---
+        Args: \n
+            url: the url of the article to scrape
+        Returns: A dictionary containing: \n
+                - Date published 
+                - Date retrieved
+                - Url
+                - Title
+                - Publisher
+                - Publisher url
+                - Author
+                - Body
+        """
         r = requests.get(url)
         soup = BeautifulSoup(r.content, 'html5lib')
 
         articles = soup.find('div', attrs={'id':'headlist'}) # headlist contains the latest 25 articles
         article_list = []
-
+        
+        # gets all the articles
         for article in articles.find_all('a', attrs={'class':'f-db'}, href=True):
             # Sometimes the topmost article is a "live article". Live articles don't seem relevant, thus they're skipped:
             if 'news' in article['href']:
