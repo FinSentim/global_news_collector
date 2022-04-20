@@ -5,7 +5,7 @@ def simulator(list):
     counter = 0
     analyzed_list = []
     for dict in list:
-        analyzed_dict = {'article_id' : counter,
+        analyzed_dict = {'article_id' : random.randint(1,20000),
                 'company_id' : random.randint(1,200),
                 'date_of_publication' : dict['date_published'],
                 'date_retrieved': dict['date_retrieved'],

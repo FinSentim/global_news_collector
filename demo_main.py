@@ -21,8 +21,9 @@ def run_demo():
     
 def clear_db():
     wrapper = rds_wrapper()
-    for i in range(1,6):
-        wrapper.article_delete(i)
+    wrapper.article_delete_all()
+    # for i in range(1,6):
+    #     wrapper.article_delete(i)
     # wrapper.article_delete(2)
     # wrapper.article_delete(3)
     # print(wrapper.article_read(2))

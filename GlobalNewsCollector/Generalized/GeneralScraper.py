@@ -38,7 +38,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
                 if dictionary != {}:
                     articles.append(dictionary)
                     counter = counter + 1
-                if counter > 25:
+                if counter > 50:
                     break
         else:
             for link in valid_links:
@@ -94,7 +94,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
 
         # Detect language, interperet lang as a string and extract language part
         article_info['url'] = url
-        article_info['date_retrieved'] = datetime.utcnow().strftime("%d-%m-%Y %H:%M")
+        article_info['date_retrieved'] = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
         
         return article_info
 

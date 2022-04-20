@@ -36,6 +36,13 @@ class rds_wrapper:
         )
         result = self.conn.execute(stmt)
 
+    def article_delete_all(self):
+            stmt = (
+                delete(self.table)
+                .where(self.table.c.article_id != None)
+            )
+            result = self.conn.execute(stmt)
+
     def article_update(self, dict):
         stmt = (
             update(self.table)
