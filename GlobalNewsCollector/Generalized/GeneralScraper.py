@@ -168,7 +168,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
         """
         
         try:
-            d = simple_json_from_html_string(resp.text, use_readability=True)
+            d = simple_json_from_html_string(resp.text, use_readability=False)
             text = ""
             for line in d['plain_text']:
                 text = text + line['text']
