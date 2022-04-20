@@ -30,9 +30,11 @@ class GeneralScraper(BaseCollector.BaseCollector):
         valid_links  = getlinks(url)
         articles = []
         for link in valid_links:
+            print(link)
             dictionary = self.get_article(link)
             if dictionary != {}:
                 articles.append(dictionary)
+                print(dictionary)
         return articles
         
     def get_article(self, url: str) -> dict:
@@ -52,7 +54,11 @@ class GeneralScraper(BaseCollector.BaseCollector):
         """
         try:
             headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0'}
-            r = requests.get(url, headers = headers, timeout=5)    
+            rs = time.time()
+            r = requests.get(url, headers = headers, timeout=2)    
+            re = time.time()
+            rtr = re - rs
+            print("time to meka request: " + str(rtr) + " s")
             # fix encoding to handle different langauages
             r.encoding = r.apparent_encoding
 
@@ -122,7 +128,22 @@ class GeneralScraper(BaseCollector.BaseCollector):
         """
         Returns true if a string contains digits or special characters.
         """
-        return bool(re.match('.*\d+.*',s)) or bool(re.match('.*\W+.*',s))         
+        return bool(re.match('.*\d+.*',s)) or bool(re.match('.*\W+.*',s))  
+
+    def __validate_dateformat(self, article_info: dict) -> dict:
+        """
+        Function validated if the found date probably is a correct date.
+        Assumption is made using regex on found date to check that it has either "YYYY-MM-DD" or "DD-MM-YYYY"
+        """
+        if article_info["date_published"] == "":
+            return article_info
+        date = article_info['date_published']
+        if bool(re.match('(\d{4}.\d{2}.\d{2})|(\d{2}.\d{2}.\d{4})')):
+            return article_info
+        else:
+            article_info['date_published'] = ""
+            return article_info
+               
 
     def __compare_article(self, article_info: dict, resp: requests.Response) -> dict:
         """
