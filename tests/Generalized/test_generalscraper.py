@@ -3,12 +3,17 @@ from GlobalNewsCollector.Generalized.GeneralScraper import GeneralScraper
 from GlobalNewsCollector.Generalized.LinkPatternMatch import getlinks
 import time
 import re
+import random
 
 class TestGeneralScraper(unittest.TestCase):
-    
-    time_start = time.time()
-    url = "http://www.people.com.cn/"
+    urls = {"CHINESE":["http://www.people.com.cn/", "https://www.yicai.com/", "http://www.xinhuanet.com/", "https://www.caixin.com/", "https://cn.chinadaily.com.cn/", ],"GERMAN":["https://www.manager-magazin.de/", "https://www.handelsblatt.com/", "https://www.finanzen.net/", "https://www.bild.de/", "https://www.wiwo.de/"],"HINDI":["https://hindi.business-standard.com/", "https://www.jagran.com/", "https://www.bhaskar.com/", "https://www.livehindustan.com/", "https://www.amarujala.com/"]}
+    keysIndex = list(urls)
+    languageIndex = random.randint(0,2)
+    language = keysIndex[languageIndex]
+    website = random.randint(0,4)
+    url = urls[language][website]
     c = GeneralScraper()
+    amount_of_articles = len(getlinks(url))
     time_start = time.time()
     dictionaries = c.get_articles_list(url)
     time_end = time.time()
@@ -38,7 +43,8 @@ class TestGeneralScraper(unittest.TestCase):
 
     def test_scraper_performance(self):
         print("Run test test_scraper_performance")
-        time_per_article = self.time_elapsed/len(self.dictionaries)
+        time_per_article = self.time_elapsed/self.amount_of_articles
+        print(time_per_article)
         self.assertLess(time_per_article,2)
 
     def test_datetime_format(self):
@@ -46,10 +52,16 @@ class TestGeneralScraper(unittest.TestCase):
         expected_retrieved_date_format = '\d{2}(-)\d{2}(-)\d{4}(\s)\d{2}(:)\d{2}'
         for d in self.dictionaries:
             publication_date = d['date_published']
+            if (publication_date != ""):
+                self.assertTrue(bool(re.match(expected_publication_date_format, publication_date)))
             retrieved_date = str(d['date_retrieved'])
-            self.assertTrue(bool(re.match(expected_publication_date_format, publication_date)))
             self.assertTrue(bool(re.match(expected_retrieved_date_format, retrieved_date)))
 
+
+    def test_get_language(self):
+        for d in self.dictionaries:
+            language = d['language']
+            self.assertEqual(language,self.language)
 
     def test_getlinks(self):
         print("Run test test_getlinks")
