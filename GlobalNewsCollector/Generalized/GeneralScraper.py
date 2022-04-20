@@ -38,7 +38,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
                 if dictionary != {}:
                     articles.append(dictionary)
                     counter = counter + 1
-                if counter > 50:
+                if counter > 4:
                     break
         else:
             for link in valid_links:
@@ -203,8 +203,8 @@ class GeneralScraper(BaseCollector.BaseCollector):
         # print("body length: " + str(len(body)))
         if len(body) <= 100:
             return validity
-        # if len(title) <1:
-        #     return validity
+        if len(title) <1:
+            return validity
 
         lang = self.detector.detect_language_of(body)
         # Extract the specific language name and check whether is is an accepted language or not
@@ -234,8 +234,10 @@ class GeneralScraper(BaseCollector.BaseCollector):
             for row in tree.findAll('p'):
                 body = body + row.text
             article_info['body'] = body
-            if article_info['title'] == "":
-                article_info['title'] = title
+            # if title exits from meta_data, use that one, othervise add title
+            # if article_info['title'] == "":
+            #     article_info['title'] = title
+            article_info['title'] = title
             # Create dictionary that contains body and title 
             return article_info
         except AttributeError:
