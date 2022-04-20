@@ -30,9 +30,11 @@ class GeneralScraper(BaseCollector.BaseCollector):
         valid_links  = getlinks(url)
         articles = []
         for link in valid_links:
+            print(link)
             dictionary = self.get_article(link)
             if dictionary != {}:
                 articles.append(dictionary)
+                print(dictionary)
         return articles
         
     def get_article(self, url: str) -> dict:
@@ -52,7 +54,9 @@ class GeneralScraper(BaseCollector.BaseCollector):
         """
         try:
             headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0'}
-            r = requests.get(url, headers = headers, timeout=5)    
+
+            r = requests.get(url, headers = headers, timeout=2)    
+
             # fix encoding to handle different langauages
             r.encoding = r.apparent_encoding
 
@@ -75,7 +79,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
         article_info = self.__compare_article(article_info, r)
 
         #   Check if body probably is article and of a valid language
-        if self.__validate_article_body(article_info['body']) != True:
+        if self.__validate_article_body(article_info['body'], article_info['title']) != True:
             return {}
 
         # Detect language, interperet lang as a string and extract language part
@@ -110,7 +114,8 @@ class GeneralScraper(BaseCollector.BaseCollector):
         article_info['url'] = url
         article_info['date_retrieved'] = datetime.utcnow().strftime("%d-%m-%Y %H:%M")
         
-        # Check to ensure normal characters
+        # Check to ensure normal characters and datformat
+        article_info = self.__validate_dateformat(article_info)
         if self.__check_characters_in_string(article_info['author']):
             article_info['author'] = ""
         return article_info
@@ -119,7 +124,27 @@ class GeneralScraper(BaseCollector.BaseCollector):
         """
         Returns true if a string contains digits or special characters.
         """
-        return bool(re.match('.*\d+.*',s)) or bool(re.match('.*\W+.*',s))         
+        return bool(re.match('.*\d+.*',s)) or bool(re.match('.*\W+.*',s))  
+
+    def __validate_dateformat(self, article_info: dict) -> dict:
+        """
+        Function validated if the found date probably is a correct date.
+        Assumption is made using regex on found date to check that it has either "YYYY-MM-DD" or "DD-MM-YYYY"
+        ---
+        args:
+            article_info: the dictionary containing the scraped information
+        returns:
+            an updated dictionary 
+        """
+        if article_info["date_published"] == "":
+            return article_info
+        date = article_info['date_published']
+        if bool(re.match('(\d{4}.\d{2}.\d{2})|(\d{2}.\d{2}.\d{4})', date)):
+            return article_info
+        else:
+            article_info['date_published'] = ""
+            return article_info
+               
 
     def __compare_article(self, article_info: dict, resp: requests.Response) -> dict:
         """
@@ -152,7 +177,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
         except Exception:
             return article_info
         
-    def __validate_article_body(self, body: str) -> bool:
+    def __validate_article_body(self, body: str, title: str) -> bool:
         """
         Method checks validity of article.
         Args: \n
@@ -164,9 +189,11 @@ class GeneralScraper(BaseCollector.BaseCollector):
 
         validity = False
 
-        # Ensure body is long enough
+        # Ensure body and title is long enough
         # print("body length: " + str(len(body)))
         if len(body) <= 100:
+            return validity
+        if len(title) <1:
             return validity
 
         lang = self.detector.detect_language_of(body)
