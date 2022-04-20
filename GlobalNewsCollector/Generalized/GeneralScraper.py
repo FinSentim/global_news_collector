@@ -21,6 +21,9 @@ from Generalized.Metadata import get_metadata
 class GeneralScraper(BaseCollector.BaseCollector):
 
     def __init__(self) -> None:
+        """
+        Constructors that initiates tha languages detector, later used to validate the articel 
+        """
         super().__init__()
         # instantiate the language detector, and decide on what languages it should be able to detect
         self.accepted_languages = ['HINDI', 'GERMAN', 'CHINESE']
@@ -134,6 +137,9 @@ class GeneralScraper(BaseCollector.BaseCollector):
         return articleInfo
         
     def __check_characters_in_string(self, s: str)->bool:
+        """
+        Returns true if a string contains digits or special characters.
+        """
         return bool(re.match('.*\d+.*',s)) or bool(re.match('.*\W+.*',s))         
 
     def __compare_article(self, articleInfo: dict, resp: requests.Response) -> dict:
