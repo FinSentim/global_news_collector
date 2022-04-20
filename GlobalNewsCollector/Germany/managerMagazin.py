@@ -4,12 +4,25 @@ from bs4 import BeautifulSoup
 from datetime import date
 
 
-
 class managerMagazin(metaclass=ABCMeta):
 
 
-
         def get_article(self,url:str) -> dict:
+                """
+                Scrap information from the article that is accessed with parameter url.
+                ---
+                Args:
+                        url: The url of the article to scrape.
+                Returns: A dictionary containing:\n
+                        - Date published 
+                        - Date retrieved
+                        - Url
+                        - Title
+                        - Publisher
+                        - Publisher url
+                        - Author
+                        - Body
+                 """
                 articleDict = {
 
                 }
@@ -18,7 +31,6 @@ class managerMagazin(metaclass=ABCMeta):
                 article = ""
 
                 # finding the body of a specific article
-
                 table = soup.find('div', attrs = {'class':'lg:mt-32 md:mt-32 sm:mt-24 md:mb-48 lg:mb-48 sm:mb-32'})
                 if(table != None):
                         for row in table.findAll('div', attrs = {'class':'RichText lg:w-8/12 md:w-10/12 lg:mx-auto md:mx-auto lg:px-24 md:px-24 sm:px-16 break-words word-wrap'}):
