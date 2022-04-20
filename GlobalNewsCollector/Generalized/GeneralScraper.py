@@ -69,7 +69,6 @@ class GeneralScraper(BaseCollector.BaseCollector):
         article_info = self.__extract_body_title(tree, article_info)
         
         # add language of article text,
-        
         lang = self.detector.detect_language_of(article_info['body'])
         article_info['language'] = str(lang).split(".")[1] if lang != None else ""
 
@@ -79,9 +78,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
         if self.__validate_article_body(article_info['body']) != True:
             return {}
 
-
         # Detect language, interperet lang as a string and extract language part
-        
         article_info['url'] = url
         article_info['date_retrieved'] = datetime.utcnow().strftime("%d-%m-%Y %H:%M")
         
@@ -104,7 +101,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
         soup = BeautifulSoup(r.content, 'html.parser')
         article_info = get_metadata(url, soup)
 
-        # Cange all none elements in dict to just be empty strings
+        # Change all none elements in dict to just be empty strings
         for k,v in article_info.items():
             if v is None:
                 article_info[k] = ""

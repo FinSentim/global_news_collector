@@ -73,7 +73,6 @@ def filter(url, source_name, likely_language) -> bool:
 
     # Will update pattern_matches, code currently only uses pattern_match
     # pattern_matches = ['^(http(s)*://).*('+source_name+').*', '.*(news).*']
-
     patterns_ignore_en = ['^(http(s)*://www.facebook.com).*','^(http(s)*://(www.)*twitter.com).*', '.*(img).*', '.*(video).*', '.*(blog).*', '.*(copyright).*', '.*(help).*','.*(login).*','.*(signup).*','.*(contact).*','.*(about).*','.*(terms-conditions).*','.*(advertise).*','.*(careers).*']
     patterns_ignore_ge = ['.*(datenschutzerklaerung).*','.*(werbung).*','.*(angebote).*','.*(nutzungsrechte).*','.*(nutzungshinweise).*','.*(nutzungsbedingungen).*']
     patterns_ignore = []

@@ -1,7 +1,21 @@
 from bs4 import BeautifulSoup
 # import requests
 
+
 def get_metadata(url: str, soup: BeautifulSoup) -> dict:
+    """
+    Gets the metadata from the article being scraped. 
+    ---
+    Args:
+        url: the article url
+        soup: a soup element imported from BeautifulSoup from which the metadata can be scraped
+        Returns:
+            A dictionary containing the infromation found from the metadata\n
+            - title
+            - author
+            - date published
+            But can be extended with date modified, language, content type and meta url.
+    """
     #Default requests headers doesn't work on some sites, TODO find the headers that work best
     headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0'}
     # r = requests.get(url, headers = headers)
