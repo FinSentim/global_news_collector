@@ -138,7 +138,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
         if article_info["date_published"] == "":
             return article_info
         date = article_info['date_published']
-        if bool(re.match('(\d{4}.\d{2}.\d{2})|(\d{2}.\d{2}.\d{4})')):
+        if bool(re.match('(\d{4}.\d{2}.\d{2})|(\d{2}.\d{2}.\d{4})', date)):
             return article_info
         else:
             article_info['date_published'] = ""
