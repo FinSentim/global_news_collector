@@ -119,7 +119,8 @@ class GeneralScraper(BaseCollector.BaseCollector):
         article_info['url'] = url
         article_info['date_retrieved'] = datetime.utcnow().strftime("%d-%m-%Y %H:%M")
         
-        # Check to ensure normal characters
+        # Check to ensure normal characters and datformat
+        article_info = self.__validate_dateformat(article_info)
         if self.__check_characters_in_string(article_info['author']):
             article_info['author'] = ""
         return article_info
@@ -134,6 +135,11 @@ class GeneralScraper(BaseCollector.BaseCollector):
         """
         Function validated if the found date probably is a correct date.
         Assumption is made using regex on found date to check that it has either "YYYY-MM-DD" or "DD-MM-YYYY"
+        ---
+        args:
+            article_info: the dictionary containing the scraped information
+        returns:
+            an updated dictionary 
         """
         if article_info["date_published"] == "":
             return article_info
