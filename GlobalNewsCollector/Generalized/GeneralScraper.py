@@ -54,11 +54,9 @@ class GeneralScraper(BaseCollector.BaseCollector):
         """
         try:
             headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0'}
-            rs = time.time()
+
             r = requests.get(url, headers = headers, timeout=2)    
-            re = time.time()
-            rtr = re - rs
-            print("time to meka request: " + str(rtr) + " s")
+
             # fix encoding to handle different langauages
             r.encoding = r.apparent_encoding
 
