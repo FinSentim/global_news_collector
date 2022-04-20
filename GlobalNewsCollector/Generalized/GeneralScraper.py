@@ -4,6 +4,7 @@ from lingua import LanguageDetectorBuilder
 from datetime import datetime
 import requests
 import re
+from GlobalNewsCollector import BaseCollector
 from GlobalNewsCollector.Generalized.LinkPatternMatch import getlinks
 from GlobalNewsCollector.Generalized.Metadata import get_metadata
 from GlobalNewsCollector import BaseCollector
