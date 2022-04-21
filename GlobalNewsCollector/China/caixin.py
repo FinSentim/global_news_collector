@@ -1,3 +1,7 @@
+import os
+import sys
+sys.path.insert(1, os.path.join(sys.path[0], '..'))
+# import BaseCollector
 from GlobalNewsCollector import BaseCollector
 import requests
 from bs4 import BeautifulSoup
@@ -23,9 +27,12 @@ class caixin(BaseCollector.BaseCollector):
         r = requests.get(url)
         soup = BeautifulSoup(r.content, 'html5lib')
         articleInfo = {}
-        articleInfo['date_publised'] = soup.find('span', attrs={'class': 'bd_block', 'id':'pubtime_baidu'}).text
-        articleInfo['date_retrieved'] = date.today().strftime("%d-%m-%Y")
-        articleInfo['url'] = url
+        try:
+            articleInfo['date_publised'] = soup.find('span', attrs={'class': 'bd_block', 'id':'pubtime_baidu'}).text
+            articleInfo['date_retrieved'] = date.today().strftime("%d-%m-%Y")
+            articleInfo['url'] = url
+        except AttributeError:
+            return articleInfo
 
         # Handle missing author articles
         try:
@@ -36,14 +43,17 @@ class caixin(BaseCollector.BaseCollector):
         articleInfo['publisher'] = "Caixin Media"
         articleInfo['publisher_url'] = "https://www.caixin.com"
 
-        # Extract article info:
-        paragraph_table = soup.find('div', attrs={'id':'Main_Content_Val'})
-        body = ""
-        for paragraph in paragraph_table.find_all('p'):
-            body = body + paragraph.text.strip()
-        
-        articleInfo['body'] = body
-        return articleInfo
+        # Extract article info, if not possible return an empty dictionary:
+        try:
+            paragraph_table = soup.find('div', attrs={'id':'Main_Content_Val'})
+            body = ""
+            for paragraph in paragraph_table.find_all('p'):
+                body = body + paragraph.text.strip()
+            
+            articleInfo['body'] = body
+            return articleInfo
+        except AttributeError:
+            return {}
   
     def get_articles_list(self, url: str) -> list:
         """
@@ -60,5 +70,7 @@ class caixin(BaseCollector.BaseCollector):
         listOFArticles = soup.find('div', attrs={'class':'news_list'})
         for article in listOFArticles.find_all('dl'):
             par = article.find('p').find('a', href=True)['href']
-            articleList.append(self.get_article(par))
+            article_dict = self.get_article(par)
+            if article_dict != {}:
+                articleList.append(article_dict)
         return articleList
