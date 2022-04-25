@@ -8,12 +8,14 @@ import random
 class TestGeneralScraper(unittest.TestCase):
     urls = {"CHINESE":["http://www.people.com.cn/", "https://www.yicai.com/", "http://www.xinhuanet.com/", "https://www.caixin.com/", "https://cn.chinadaily.com.cn/", ],"GERMAN":["https://www.manager-magazin.de/", "https://www.handelsblatt.com/", "https://www.finanzen.net/", "https://www.bild.de/", "https://www.wiwo.de/"],"HINDI":["https://hindi.business-standard.com/", "https://www.jagran.com/", "https://www.bhaskar.com/", "https://www.livehindustan.com/", "https://www.amarujala.com/"]}
     keysIndex = list(urls)
-    languageIndex = random.randint(0,2)
-    language = keysIndex[languageIndex]
-    website = random.randint(0,4)
-    url = urls[language][website]
+    amount_of_articles = 0
+    while (amount_of_articles == 0):
+        languageIndex = random.randint(0,2)
+        language = keysIndex[languageIndex]
+        website = random.randint(0,4)
+        url = urls[language][website]
+        amount_of_articles = len(getlinks(url))
     c = GeneralScraper()
-    amount_of_articles = len(getlinks(url))
     time_start = time.time()
     dictionaries = c.get_articles_list(url)
     time_end = time.time()

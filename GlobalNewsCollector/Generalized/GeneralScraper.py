@@ -30,6 +30,8 @@ class GeneralScraper(BaseCollector.BaseCollector):
         limit_articles = False
         counter = 0
         valid_links  = getlinks(url)
+        if valid_links == []:
+            print(url + "Generated zero valid article links, most likely due access denied to website server")
         articles = []
         if limit_articles:
             for link in valid_links:
