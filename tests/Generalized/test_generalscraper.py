@@ -21,28 +21,24 @@ class TestGeneralScraper(unittest.TestCase):
     non_alphabetical = ['_','0','1','2','3','4','5','6','7','8','9']
 
     def test_get_article_author(self):
-        print("Run test test_get_article_author")
         for d in self.dictionaries:
             author = d['author']
             for n_a in self.non_alphabetical:
                 self.assertFalse(n_a in author)
             
     def test_get_article_body(self):
-        print("Run test test_get_article_body")
         body_length = 0
         for dictionary in self.dictionaries:
             body_length = len(dictionary['body'])
             self.assertGreaterEqual(body_length,100)   
     
     def test_get_article_title(self):
-        print("Run test test_get_article_title")
         title_length = 0
         for dictionary in self.dictionaries:
             title_length = len(dictionary['title'])
             self.assertGreater(title_length,0)
 
     def test_scraper_performance(self):
-        print("Run test test_scraper_performance")
         time_per_article = self.time_elapsed/self.amount_of_articles
         print(time_per_article)
         self.assertLess(time_per_article,2)
@@ -64,7 +60,6 @@ class TestGeneralScraper(unittest.TestCase):
             self.assertEqual(language,self.language)
 
     def test_getlinks(self):
-        print("Run test test_getlinks")
         known_good_url = "http://www.people.com.cn/"
         valid_articles = getlinks(known_good_url)
         self.assertGreater(len(valid_articles),0)
