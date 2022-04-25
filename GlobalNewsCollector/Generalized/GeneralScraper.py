@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 from readabilipy import simple_tree_from_html_string, simple_json_from_html_string
-from lingua import LanguageDetectorBuilder
+from lingua import LanguageDetectorBuilder, Language
 from datetime import datetime
 import requests
 import re
@@ -17,7 +17,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
         """
         super().__init__()
         # instantiate the language detector, and decide on what languages it should be able to detect
-        self.accepted_languages = ['HINDI', 'GERMAN', 'CHINESE']
+        self.accepted_languages = [Language.GERMAN, Language.HINDI, Language.CHINESE]
         self.detector = LanguageDetectorBuilder.from_all_languages().build()
 
     def get_articles_list(self, url: str) -> list:
@@ -208,7 +208,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
 
         lang = self.detector.detect_language_of(body)
         # Extract the specific language name and check whether is is an accepted language or not
-        if (str(lang).split('.')[1] in self.accepted_languages):
+        if lang in self.accepted_languages:
             validity = True
         return validity
 
