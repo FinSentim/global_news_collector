@@ -7,7 +7,6 @@ import re
 from GlobalNewsCollector import BaseCollector
 from GlobalNewsCollector.Generalized.LinkPatternMatch import getlinks
 from GlobalNewsCollector.Generalized.Metadata import get_metadata
-from GlobalNewsCollector import BaseCollector
 
 class GeneralScraper(BaseCollector.BaseCollector):
 
@@ -82,14 +81,13 @@ class GeneralScraper(BaseCollector.BaseCollector):
         article_info = self.__extract_metadata(url, r)
         article_info = self.__extract_body_title(tree, article_info)
         
-        # add language of article text,
+        # add language of article text, lang object is later used in the validate_article_body to ensure language coherency
         lang = self.detector.detect_language_of(article_info['body'])
         article_info['language'] = str(lang).split(".")[1] if lang != None else ""
-
         article_info = self.__compare_article(article_info, r)
 
         #   Check if body probably is article and of a valid language
-        if self.__validate_article_body(article_info['body'], article_info['title']) != True:
+        if self.__validate_article_body(article_info, lang) != True:
             return {}
 
         # Detect language, interperet lang as a string and extract language part
@@ -187,9 +185,9 @@ class GeneralScraper(BaseCollector.BaseCollector):
         except Exception:
             return article_info
         
-    def __validate_article_body(self, body: str, title: str) -> bool:
+    def __validate_article_body(self, articleInfo: dict, lang) -> bool:
         """
-        Method checks validity of article.
+        Method checks validity of article, and add the language of article to article dictionary
         Args: \n
             body: string of arcitle body. 
         Returns: \n
@@ -201,12 +199,12 @@ class GeneralScraper(BaseCollector.BaseCollector):
 
         # Ensure body and title is long enough
         # print("body length: " + str(len(body)))
-        if len(body) <= 100:
+        if len(articleInfo['body']) <= 100:
             return validity
-        if len(title) <3:
+        if len(articleInfo['body']) <3:
             return validity
 
-        lang = self.detector.detect_language_of(body)
+        # lang = self.detector.detect_language_of(articleInfo['body'])
         # Extract the specific language name and check whether is is an accepted language or not
         if lang in self.accepted_languages:
             validity = True

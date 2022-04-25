@@ -57,6 +57,8 @@ class TestGeneralScraper(unittest.TestCase):
     def test_get_language(self):
         for d in self.dictionaries:
             language = d['language']
+            if language not in ['German', 'HINDI', 'CHINESE']:
+                print(d['url'])
             self.assertEqual(language,self.language)
 
     def test_getlinks(self):
