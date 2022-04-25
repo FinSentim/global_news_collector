@@ -40,7 +40,6 @@ class TestGeneralScraper(unittest.TestCase):
 
     def test_scraper_performance(self):
         time_per_article = self.time_elapsed/self.amount_of_articles
-        print(time_per_article)
         self.assertLess(time_per_article,2)
 
     def test_datetime_format(self):
@@ -57,8 +56,6 @@ class TestGeneralScraper(unittest.TestCase):
     def test_get_language(self):
         for d in self.dictionaries:
             language = d['language']
-            if language not in ['German', 'HINDI', 'CHINESE']:
-                print(d['url'])
             self.assertEqual(language,self.language)
 
     def test_getlinks(self):
