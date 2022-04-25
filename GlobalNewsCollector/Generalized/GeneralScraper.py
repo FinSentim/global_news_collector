@@ -28,7 +28,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
             url: The url of the website.
         Returns: A list containing a dictionary returned from get_article() for each article.
         """
-        limit_articles = True
+        limit_articles = False
         counter = 0
         valid_links  = getlinks(url)
         articles = []
