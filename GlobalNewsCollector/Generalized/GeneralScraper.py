@@ -94,7 +94,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
 
         # Add more information about scraping process
         article_info['url'] = url
-        article_info['date_retrieved'] = datetime.utcnow().strftime("%d-%m-%Y %H:%M")
+        article_info['date_retrieved'] = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
         article_info['publisher'] = self.__extract_publisher(url)
         
         return article_info
