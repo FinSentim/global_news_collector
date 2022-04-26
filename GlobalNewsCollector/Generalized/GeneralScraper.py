@@ -27,7 +27,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
             url: The url of the website.
         Returns: A list containing a dictionary returned from get_article() for each article.
         """
-        limit_articles = True
+        limit_articles = False
         counter = 0
         valid_links  = getlinks(url)
         if valid_links == []:
@@ -234,7 +234,10 @@ class GeneralScraper(BaseCollector.BaseCollector):
                 body = body + row.text
             article_info['body'] = body
             # Check if scraper found a title, otherwise use the title in the meta data.
-            article_info['title'] = title if title != "" else article_info['title']
+            try:
+                article_info['title'] = title if title != "" else article_info['title']
+            except:
+                article_info['title'] = title
             # Create dictionary that contains body and title 
             return article_info
         except AttributeError:
