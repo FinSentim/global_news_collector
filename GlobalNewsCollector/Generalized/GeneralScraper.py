@@ -202,9 +202,7 @@ class GeneralScraper(BaseCollector.BaseCollector):
 
         # Ensure body and title is long enough
         # print("body length: " + str(len(body)))
-        if len(articleInfo['body']) <= 100:
-            return validity
-        if len(articleInfo['body']) <3:
+        if len(articleInfo['body']) <= 100 or len(articleInfo['title']) < 3:
             return validity
 
         # lang = self.detector.detect_language_of(articleInfo['body'])

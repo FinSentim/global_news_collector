@@ -46,7 +46,7 @@ class TestGeneralScraper(unittest.TestCase):
 
     def test_datetime_format(self):
         expected_publication_date_format = '(\d{4}.\d{2}.\d{2})|(\d{2}.\d{2}.\d{4})'
-        expected_retrieved_date_format = '\d{2}(-)\d{2}(-)\d{4}(\s)\d{2}(:)\d{2}'
+        expected_retrieved_date_format = '\d{4}(-)\d{2}(-)\d{2}(\s)\d{2}(:)\d{2}(:)\d{2}'
         for d in self.dictionaries:
             publication_date = d['date_published']
             if (publication_date != ""):
