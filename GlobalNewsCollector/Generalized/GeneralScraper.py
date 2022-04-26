@@ -235,8 +235,8 @@ class GeneralScraper(BaseCollector.BaseCollector):
             for row in tree.findAll('p'):
                 body = body + row.text
             article_info['body'] = body
-            if article_info['title'] == "":
-                article_info['title'] = title
+            # Check if scraper found a title, otherwise use the title in the meta data.
+            article_info['title'] = title if title != "" else article_info['title']
             # Create dictionary that contains body and title 
             return article_info
         except AttributeError:
