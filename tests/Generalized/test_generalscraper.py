@@ -6,18 +6,19 @@ import re
 import random
 
 class TestGeneralScraper(unittest.TestCase):
-    urls = {"CHINESE":["http://www.people.com.cn/", "https://www.yicai.com/", "http://www.xinhuanet.com/", "https://www.caixin.com/", "https://cn.chinadaily.com.cn/", ],"GERMAN":["https://www.manager-magazin.de/", "https://www.handelsblatt.com/", "https://www.finanzen.net/", "https://www.bild.de/", "https://www.wiwo.de/"],"HINDI":["https://hindi.business-standard.com/", "https://www.jagran.com/", "https://www.bhaskar.com/", "https://www.livehindustan.com/", "https://www.amarujala.com/"]}
-    keysIndex = list(urls)
-    amount_of_articles = 0
-    while (amount_of_articles == 0):
-        languageIndex = random.randint(0,2)
-        language = keysIndex[languageIndex]
-        website = random.randint(0,4)
-        url = urls[language][website]
-        amount_of_articles = len(getlinks(url))
+    # urls = {"CHINESE":["http://www.people.com.cn/", "https://www.yicai.com/", "http://www.xinhuanet.com/", "https://www.caixin.com/", "https://cn.chinadaily.com.cn/", ],"GERMAN":["https://www.manager-magazin.de/", "https://www.handelsblatt.com/", "https://www.finanzen.net/", "https://www.bild.de/", "https://www.wiwo.de/"],"HINDI":["https://hindi.business-standard.com/", "https://www.jagran.com/", "https://www.bhaskar.com/", "https://www.livehindustan.com/", "https://www.amarujala.com/"]}
+    # keysIndex = list(urls)
+    # amount_of_articles = 0
+    # while (amount_of_articles == 0):
+    #     languageIndex = random.randint(0,2)
+    #     language = keysIndex[languageIndex]
+    #     website = random.randint(0,4)
+    #     url = urls[language][website]
+    #     amount_of_articles = len(getlinks(url))
+    amount_of_articles = len(getlinks("https://www.manager-magazin.de/"))
     c = GeneralScraper()
     time_start = time.time()
-    dictionaries = c.get_articles_list(url)
+    dictionaries = c.get_articles_list("https://www.manager-magazin.de/")
     time_end = time.time()
     time_elapsed = time_end - time_start
     non_alphabetical = ['_','0','1','2','3','4','5','6','7','8','9']
