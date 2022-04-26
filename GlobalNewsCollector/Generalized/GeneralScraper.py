@@ -234,7 +234,10 @@ class GeneralScraper(BaseCollector.BaseCollector):
                 body = body + row.text
             article_info['body'] = body
             # Check if scraper found a title, otherwise use the title in the meta data.
-            article_info['title'] = title if title != "" else article_info['title']
+            try:
+                article_info['title'] = title if title != "" else article_info['title']
+            except:
+                article_info['title'] = title
             # Create dictionary that contains body and title 
             return article_info
         except AttributeError:
