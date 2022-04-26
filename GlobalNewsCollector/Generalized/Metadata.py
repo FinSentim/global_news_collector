@@ -1,4 +1,3 @@
-from types import NoneType
 from bs4 import BeautifulSoup
 # import requests
 
@@ -51,7 +50,7 @@ def get_metadata(url: str, soup: BeautifulSoup) -> dict:
             current_tag = tag.get(metaproperty, None)
             if current_tag != None:
                 str = tag.get("content", None)
-                if(str == NoneType or str == None):
+                if(str == None):
                     continue
 
                 #Booleans to check if a tag has [not] been found 
