@@ -92,9 +92,10 @@ class GeneralScraper(BaseCollector.BaseCollector):
         if self.__validate_article_body(article_info, lang) != True:
             return {}
 
-        # Detect language, interperet lang as a string and extract language part
+        # Add more information about scraping process
         article_info['url'] = url
         article_info['date_retrieved'] = datetime.utcnow().strftime("%d-%m-%Y %H:%M")
+        article_info['publisher'] = self.__extract_publisher(url)
         
         return article_info
 
@@ -241,3 +242,21 @@ class GeneralScraper(BaseCollector.BaseCollector):
         except AttributeError:
             article_info['body'] = body
             return article_info
+
+    def __extract_publisher(self, url: str)-> str:
+        """
+        Function extraxts source/publisher name from given url by matching regex statments
+        args:\n
+            url: string representation of url currently being scraped 
+        returns: \n
+            A string containing the source name. empty string if not found by regex statment
+        """
+        alternativs = []
+        alternativs = re.findall('((?<=www.)[a-z\-]+)',url)
+        if alternativs == []:
+            alternativs = re.findall('[a-z\-]+(?=\.com)', url)
+
+        if alternativs != []:
+          return alternativs[0]
+        else:
+            return ""
