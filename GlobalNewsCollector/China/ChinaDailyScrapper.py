@@ -6,6 +6,21 @@ import datetime
 class ChinaDailyScrapper(BaseCollector):
 
     def get_article(self, url: str) -> dict:
+        """
+        Scrapes information from an article from the website cn.chinadaily.com.cn/" accessed with the url parameter
+        ---
+        Args: \n
+            url: the url of the article to scrape
+        Returns: A dictionary containing: \n
+                - Body
+                - Title
+                - Date of publication
+                - Date retrieved
+                - Url
+                - Author
+                - Publisher
+                - Publisher url
+        """
         r = requests.get(url)
         soup = BeautifulSoup(r.content, 'html5lib')
         body = []

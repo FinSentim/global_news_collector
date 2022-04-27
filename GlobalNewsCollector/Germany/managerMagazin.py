@@ -4,12 +4,25 @@ from bs4 import BeautifulSoup
 from datetime import date
 
 
-
 class managerMagazin(metaclass=ABCMeta):
 
 
-
         def get_article(self,url:str) -> dict:
+                """
+                Scrap information from the article that is accessed with parameter url.
+                ---
+                Args:
+                        url: The url of the article to scrape.
+                Returns: A dictionary containing:\n
+                        - Date published 
+                        - Date retrieved
+                        - Url
+                        - Title
+                        - Publisher
+                        - Publisher url
+                        - Author
+                        - Body
+                 """
                 articleDict = {
 
                 }
@@ -18,10 +31,9 @@ class managerMagazin(metaclass=ABCMeta):
                 article = ""
 
                 # finding the body of a specific article
-
                 table = soup.find('div', attrs = {'class':'lg:mt-32 md:mt-32 sm:mt-24 md:mb-48 lg:mb-48 sm:mb-32'})
                 if(table != None):
-                        for row in table.findAll('div', attrs = {'class':'RichText RichText--iconLinks lg:w-8/12 md:w-10/12 lg:mx-auto md:mx-auto lg:px-24 md:px-24 sm:px-16 break-words word-wrap'}):
+                        for row in table.findAll('div', attrs = {'class':'RichText lg:w-8/12 md:w-10/12 lg:mx-auto md:mx-auto lg:px-24 md:px-24 sm:px-16 break-words word-wrap'}):
                                 article = article + row.text
 
                 # adding finishing paragraph to the body        
@@ -29,6 +41,7 @@ class managerMagazin(metaclass=ABCMeta):
                 if(table != None):
                         article = article + table.text
 
+                
                 #Remove unnecessary characters and whitespaces from string
                 article = article.replace("\n","")
                 article = article.replace("\"", "'")
@@ -64,7 +77,6 @@ class managerMagazin(metaclass=ABCMeta):
                 articleDict["publisher_url"] = "https://www.manager-magazin.de/" 
                 articleDict["author"] = author
                 articleDict["body"] = article
-
                 
                 return articleDict
         
@@ -84,5 +96,4 @@ class managerMagazin(metaclass=ABCMeta):
                                         pass   
                                 else:
                                         article_list.append(dict)
-
                 return article_list

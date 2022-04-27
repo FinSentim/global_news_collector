@@ -8,6 +8,21 @@ import pytz
 class Xinhuanet(metaclass=ABCMeta):
 
     def get_article(self,url:str) -> dict:
+        """
+        Scrapes information from an article from the website xinhuanet.com accessed with the url parameter
+        ---
+        Args: \n
+            url: the url of the article to scrape
+        Returns: A dictionary containing: \n
+                - Date published 
+                - Date retrieved
+                - Url
+                - Title
+                - Publisher
+                - Publisher url
+                - Author
+                - Body
+        """
         article_dict = {}
         r = requests.get(url)
         soup = BeautifulSoup(r.content,'html5lib')

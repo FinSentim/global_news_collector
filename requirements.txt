@@ -12,3 +12,8 @@ urllib3==1.26.8
 webencodings==0.5.1
 wincertstore==0.2
 pytz==2021.3
+langid==1.1.6
+readabilipy==0.2.0
+langdetect==1.0.9
+lingua-language-detector==1.0.1
+
